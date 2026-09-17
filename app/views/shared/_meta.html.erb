@@ -1,24 +1,35 @@
-<meta name="robots" content="noindex, nofollow">
-<% title = content_for(:html_title) || (signed_in? ? Docuseal.product_name : 'MARFI Secure eSIGN') %>
-<% description = content_for(:html_description) || 'Private document signing for MARFI.' %>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<% title = content_for(:html_title) || 'MARFI Secure eSIGN' %>
+<% description = content_for(:html_description) || "Review and sign documents through MARFI's secure eSignature portal." %>
+<meta name="application-name" content="MARFI Secure eSIGN">
+<meta name="apple-mobile-web-app-title" content="MARFI eSIGN">
 <meta name="description" content="<%= description %>">
 <meta property="og:title" content="<%= title %>">
 <meta property="og:description" content="<%= description %>">
 <meta property="og:type" content="website">
-<meta property="og:url" content="<%= root_url %>">
+<meta property="og:url" content="<%= content_for(:canonical_url).presence || root_url %>">
 <meta property="og:site_name" content="MARFI Secure eSIGN">
 <% if content_for(:disable_image_preview) %>
   <meta property="og:image" content="">
   <meta name="twitter:image" content="">
+  <meta name="twitter:card" content="summary">
 <% else %>
-  <meta property="og:image" content="<%= content_for(:preview_image_url).presence || "#{root_url}preview.png" %>">
-  <meta property="og:image:width" content="800">
-  <meta property="og:image:height" content="800">
-  <meta name="twitter:image" content="<%= content_for(:preview_image_url).presence || "#{root_url}preview.png" %>">
+  <% preview_url = content_for(:preview_image_url).presence || "#{root_url}marfi-secure-esign-social.png?v=20260917" %>
+  <meta property="og:image" content="<%= preview_url %>">
+  <% unless content_for(:preview_image_url).present? %>
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="MARFI Secure eSIGN document signing portal">
+    <meta name="twitter:image:alt" content="MARFI Secure eSIGN document signing portal">
+  <% end %>
+  <meta name="twitter:image" content="<%= preview_url %>">
+  <meta name="twitter:card" content="summary_large_image">
 <% end %>
-<meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="<%= title %>">
 <meta name="twitter:description" content="<%= description %>">
-<link rel="apple-touch-icon" sizes="180x180" href="/marfi-logo.png">
-<link rel="icon" type="image/png" sizes="600x600" href="/marfi-logo.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=marfi-20260917">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=marfi-20260917">
+<link rel="shortcut icon" href="/favicon.ico?v=marfi-20260917">
+<link rel="apple-touch-icon" sizes="180x180" href="/marfi-icon-180.png?v=20260917">
 <meta name="theme-color" content="#08090d">

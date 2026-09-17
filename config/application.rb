@@ -19,6 +19,8 @@ module DocuSeal
   class Application < Rails::Application
     config.load_defaults 8.1
 
+    config.action_dispatch.default_headers['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
+
     config.active_support.message_serializer = :json
 
     config.autoload_lib(ignore: %w[assets tasks puma])

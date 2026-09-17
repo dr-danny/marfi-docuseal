@@ -1,2 +1,4 @@
+# Private signing portal. Crawling is allowed so robots can read the noindex directives.
+# This file is not an access control; authentication remains enforced by the app.
 User-agent: *
 Allow: /
