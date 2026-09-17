@@ -14,8 +14,13 @@ RSpec.describe 'MARFI landing page', type: :request do
     expect(html.at_css('.marfi-portal-signin')['href']).to eq(new_user_session_path)
     expect(html.at_css('meta[name="robots"]')['content']).to include('noindex')
     expect(html.at_css('link[rel="icon"]')['href']).to eq('/marfi-logo.png')
-    expect(html.at_css('.marfi-portal-footer a:first-child')['href']).to eq(Docuseal::GITHUB_URL)
-    expect(html.at_css('.marfi-portal-footer a:last-child')['href']).to eq(Docuseal::SOURCE_URL)
+    expect(html.at_css('.marfi-portal-attribution a:first-child')['href']).to eq(Docuseal::GITHUB_URL)
+    expect(html.at_css('.marfi-portal-attribution a:last-child')['href']).to eq(Docuseal::SOURCE_URL)
+    expect(html.at_css('.marfi-wireframe')).to be_present
+    expect(html.at_css('.marfi-portal-art img')).to be_nil
+    expect(html.at_css('.marfi-portal-legal a:nth-child(1)')['href']).to eq('https://marfi.ai/legal/privacy/')
+    expect(html.at_css('.marfi-portal-legal a:nth-child(2)')['href']).to eq('https://marfi.ai/legal/terms/')
+    expect(html.at_css('.marfi-portal-legal a:nth-child(3)')['href']).to eq('https://trust.marfi.io/monitoring')
     expect(html.text).not_to include('Private document signing', '01 / Secure portal')
   end
 end

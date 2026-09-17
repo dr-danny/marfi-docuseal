@@ -104,11 +104,35 @@
   .marfi-portal-signin svg { width: 18px; height: 18px; }
 
   .marfi-portal-art { display: grid; place-items: center; }
-  .marfi-portal-art img { display: block; width: 100%; max-width: 390px; height: auto; opacity: .85; }
+  .marfi-wireframe { display: block; width: 100%; max-width: 440px; height: auto; overflow: visible; }
+  .marfi-wireframe-stack { animation: marfi-document-drift 12s ease-in-out infinite; }
+  .marfi-wireframe-scan { animation: marfi-document-scan 10s ease-in-out infinite; }
+  .marfi-wireframe-signature { stroke-dasharray: 260; stroke-dashoffset: 0; animation: marfi-signature-trace 10s ease-in-out infinite; }
+
+  @keyframes marfi-document-drift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes marfi-document-scan {
+    0%, 12% { transform: translateY(0); opacity: 0; }
+    22% { opacity: .55; }
+    70% { opacity: .55; }
+    85%, 100% { transform: translateY(218px); opacity: 0; }
+  }
+
+  @keyframes marfi-signature-trace {
+    0%, 35% { stroke-dashoffset: 260; opacity: .35; }
+    65%, 90% { stroke-dashoffset: 0; opacity: .85; }
+    100% { stroke-dashoffset: 0; opacity: .35; }
+  }
 
   .marfi-portal-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px 30px;
     padding: 22px 0;
     border-top: 1px solid rgba(255, 255, 255, .14);
     font-family: 'MARFI Mono', monospace;
@@ -116,6 +140,9 @@
     line-height: 1.7;
     color: #999ba5;
   }
+
+  .marfi-portal-legal { display: flex; gap: 24px; }
+  .marfi-portal-attribution { margin-left: auto; }
 
   .marfi-portal-footer a { color: #b9bac1; text-decoration: underline; text-underline-offset: 3px; }
   .marfi-portal-footer a:hover { color: var(--paper); }
@@ -131,6 +158,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .marfi-portal-signin { transition: none; }
+    .marfi-wireframe-stack, .marfi-wireframe-scan, .marfi-wireframe-signature { animation: none; }
+    .marfi-wireframe-scan { opacity: 0; }
   }
 </style>
 
@@ -153,11 +182,55 @@
       <% end %>
     </div>
     <div class="marfi-portal-art" aria-hidden="true">
-      <img src="/marfi-mark-display.png" alt="" width="900" height="900">
+      <svg class="marfi-wireframe" viewBox="0 0 480 500" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+        <defs>
+          <linearGradient id="marfi-wireframe-edge" x1="105" y1="75" x2="380" y2="430" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#ff5362" stop-opacity=".85"></stop>
+            <stop offset="1" stop-color="#de3c4b" stop-opacity=".3"></stop>
+          </linearGradient>
+          <clipPath id="marfi-document-clip">
+            <path d="M124 88L292 62L365 127V363L124 405Z"></path>
+          </clipPath>
+        </defs>
+        <g stroke="#999ba5" stroke-width=".7" opacity=".16">
+          <path d="M30 434L269 478L449 406M30 434L215 359L449 406M90 445L270 372M150 456L329 384M211 467L389 396"></path>
+          <path d="M76 415L315 459M122 397L360 441M168 378L405 422"></path>
+        </g>
+        <g class="marfi-wireframe-stack" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M92 116L260 90L333 155V391L92 433Z" stroke="#999ba5" stroke-opacity=".15"></path>
+          <path d="M108 102L276 76L349 141V377L108 419Z" stroke="#999ba5" stroke-opacity=".27"></path>
+          <path d="M124 88L292 62L365 127V363L124 405Z" stroke="url(#marfi-wireframe-edge)" stroke-width="1.3"></path>
+          <path d="M292 62V139L365 127" stroke="#ff5362" stroke-width="1.1" stroke-opacity=".7"></path>
+          <path d="M124 405L108 419L92 433M365 363L349 377L333 391" stroke="#999ba5" stroke-opacity=".2"></path>
+          <g stroke="#f2eee7" stroke-width="1" stroke-opacity=".24">
+            <path d="M157 150L248 135M157 177L325 148M157 191L325 162"></path>
+            <path d="M157 227L325 198M157 241L307 215M157 255L325 226M157 269L273 249"></path>
+            <path d="M157 345L263 327"></path>
+          </g>
+          <g clip-path="url(#marfi-document-clip)">
+            <path class="marfi-wireframe-scan" d="M125 116L364 75" stroke="#ff5362" stroke-width="1" opacity="0"></path>
+          </g>
+          <path class="marfi-wireframe-signature" d="M162 329C181 301 188 286 182 284C172 281 170 326 181 326C190 326 199 298 195 297C189 296 192 321 200 319L212 305C213 320 220 318 228 304C229 314 239 314 249 303" stroke="#ff5362" stroke-width="1.5" opacity=".85"></path>
+          <g stroke="#de3c4b" stroke-opacity=".6" stroke-width="1.1">
+            <path d="M304 287L328 296V318C328 333 316 346 304 352C292 346 280 333 280 318V296Z"></path>
+            <path d="M292 318L301 327L317 308"></path>
+          </g>
+          <g fill="#ff5362" fill-opacity=".65" stroke="none">
+            <circle cx="124" cy="88" r="2"></circle>
+            <circle cx="365" cy="363" r="2"></circle>
+            <circle cx="124" cy="405" r="2"></circle>
+          </g>
+        </g>
+      </svg>
     </div>
   </main>
 
   <footer class="marfi-portal-footer">
-    <span>Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a> · <a href="<%= Docuseal::SOURCE_URL %>" target="_blank" rel="noopener">Source</a></span>
+    <nav class="marfi-portal-legal" aria-label="Legal and security">
+      <a href="https://marfi.ai/legal/privacy/" target="_blank" rel="noopener">Privacy</a>
+      <a href="https://marfi.ai/legal/terms/" target="_blank" rel="noopener">Terms</a>
+      <a href="https://trust.marfi.io/monitoring" target="_blank" rel="noopener">Security</a>
+    </nav>
+    <span class="marfi-portal-attribution">Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a> · <a href="<%= Docuseal::SOURCE_URL %>" target="_blank" rel="noopener">Source</a></span>
   </footer>
 </section>
