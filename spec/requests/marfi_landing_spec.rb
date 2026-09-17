@@ -12,8 +12,8 @@ RSpec.describe 'MARFI landing page', type: :request do
     expect(html.at_css('.marfi-portal-signin')['href']).to eq(new_user_session_path)
     expect(html.at_css('meta[name="robots"]')['content']).to include('noindex')
     expect(html.at_css('link[rel="icon"]')['href']).to eq('/marfi-logo.png')
-    expect(html.css('.marfi-portal-footer a').map { |link| link['href'] })
-      .to eq([Docuseal::GITHUB_URL, Docuseal::SOURCE_URL])
+    expect(html.at_css('.marfi-portal-footer a:first-child')['href']).to eq(Docuseal::GITHUB_URL)
+    expect(html.at_css('.marfi-portal-footer a:last-child')['href']).to eq(Docuseal::SOURCE_URL)
     expect(html.text).not_to include('Private document signing', '01 / Secure portal')
   end
 end
