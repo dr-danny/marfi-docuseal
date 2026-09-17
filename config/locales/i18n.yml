@@ -625,6 +625,9 @@ en: &en
   submission_has_been_unarchived: Submission has been unarchived.
   unable_to_update_file: Unable to upload file.
   user_has_been_invited: User has been invited.
+  user_created_without_invitation: User created. No invitation email was sent.
+  send_user_invitation_email: Send invitation email
+  password_required_without_invitation: A password is required when no invitation is sent.
   unable_to_update_user: Unable to update user.
   user_has_been_updated: User has been updated.
   unable_to_remove_user: Unable to remove user.

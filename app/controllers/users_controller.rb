@@ -36,10 +36,18 @@ class UsersController < ApplicationController
   def edit; end
 
   def create
+    send_invitation = Docuseal.multitenant? || params[:send_invitation] != '0'
+
+    if !send_invitation && @user.password.blank?
+      @user.errors.add(:password, :blank)
+
+      return render turbo_stream: turbo_stream.replace(:modal, template: 'users/new'), status: :unprocessable_content
+    end
+
     existing_user = User.accessible_by(current_ability).find_by(email: @user.email)
 
     if existing_user
-      if existing_user.archived_at? &&
+      if send_invitation && existing_user.archived_at? &&
          current_ability.can?(:manage, existing_user) && current_ability.can?(:manage, @user.account)
         existing_user.assign_attributes(@user.slice(:first_name, :last_name, :role, :account_id))
         existing_user.archived_at = nil
@@ -55,9 +63,11 @@ class UsersController < ApplicationController
     @user.role = User::ADMIN_ROLE unless role_valid?(@user.role)
 
     if @user.save
-      UserMailer.invitation_email(@user).deliver_later!
+      UserMailer.invitation_email(@user).deliver_later! if send_invitation
 
-      redirect_back fallback_location: settings_users_path, notice: I18n.t('user_has_been_invited')
+      notice = I18n.t(send_invitation ? 'user_has_been_invited' : 'user_created_without_invitation')
+
+      redirect_back fallback_location: settings_users_path, notice:
     else
       render turbo_stream: turbo_stream.replace(:modal, template: 'users/new'), status: :unprocessable_content
     end
