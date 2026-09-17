@@ -1,1 +1,3 @@
-
+<% if HexclavePilot::Config.available? %>
+  <p class="text-center mt-4"><%= link_to 'Use pilot sign-in', hexclave_pilot_path, class: 'link link-hover' %></p>
+<% end %>

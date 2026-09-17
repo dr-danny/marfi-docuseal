@@ -1,0 +1,37 @@
+<%= content_for(:canonical_url, hexclave_pilot_url) %>
+<div id="hexclave-pilot"
+     data-project-id="<%= HexclavePilot::Config.project_id %>"
+     data-publishable-client-key="<%= HexclavePilot::Config.publishable_client_key %>"
+     data-exchange-url="<%= hexclave_pilot_session_path %>">
+  <h1 class="text-3xl font-bold text-center mt-8">Pilot sign-in</h1>
+  <p class="text-center mt-3">Use your approved pilot identity. Native sign-in, recovery, and MFA remain available.</p>
+
+  <div class="max-w-lg mx-auto mt-8 space-y-4">
+    <div id="hexclave-pilot-start">
+      <label for="hexclave-pilot-email" class="label">Email</label>
+      <input id="hexclave-pilot-email" type="email" autocomplete="email" class="base-input w-full" required>
+      <button id="hexclave-pilot-send" type="button" class="base-button w-full mt-4">Email me a pilot code</button>
+    </div>
+
+    <div id="hexclave-pilot-code" class="hidden">
+      <label for="hexclave-pilot-otp" class="label">Email code</label>
+      <input id="hexclave-pilot-otp" type="text" inputmode="text" autocomplete="one-time-code" class="base-input w-full" maxlength="6">
+      <button id="hexclave-pilot-verify" type="button" class="base-button w-full mt-4">Verify code</button>
+    </div>
+
+    <div id="hexclave-pilot-mfa" class="hidden">
+      <label for="hexclave-pilot-mfa-code" class="label">Authenticator code</label>
+      <input id="hexclave-pilot-mfa-code" type="text" inputmode="numeric" autocomplete="one-time-code" class="base-input w-full" maxlength="6">
+      <button id="hexclave-pilot-mfa-verify" type="button" class="base-button w-full mt-4">Verify authenticator</button>
+    </div>
+
+    <div id="hexclave-pilot-link" class="hidden">
+      <p>Confirm this magic link to continue.</p>
+      <button id="hexclave-pilot-link-verify" type="button" class="base-button w-full mt-4">Continue sign-in</button>
+    </div>
+
+    <p id="hexclave-pilot-message" class="text-sm" role="alert" aria-live="polite"></p>
+    <p><%= link_to 'Use native sign-in', new_user_session_path, class: 'link link-hover' %></p>
+  </div>
+</div>
+<%= javascript_pack_tag 'hexclave_pilot', defer: true %>

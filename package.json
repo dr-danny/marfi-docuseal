@@ -10,6 +10,7 @@
     "@codemirror/lang-html": "^6.4.9",
     "@eid-easy/eideasy-widget": "^2.171.0",
     "@github/catalyst": "^2.0.0-beta",
+    "@hexclave/js": "1.0.67",
     "@hotwired/turbo": "https://github.com/docusealco/turbo#main",
     "@hotwired/turbo-rails": "^7.3.0",
     "@specious/htmlflow": "^1.1.0",
