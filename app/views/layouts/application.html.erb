@@ -20,6 +20,7 @@
   </head>
   <body>
     <% landing_page = controller_name == 'dashboard' && action_name == 'index' && !signed_in? %>
+    <% sign_in_page = controller_name == 'sessions' && !signed_in? %>
     <% if params[:modal].present? %>
       <% modal_uri = Addressable::URI.parse(params[:modal]) %>
       <% url_params = Rails.application.routes.recognize_path(modal_uri.path, method: :get) %>
@@ -29,11 +30,39 @@
     <% end %>
     <turbo-frame id="modal"></turbo-frame>
     <turbo-frame id="drawer"></turbo-frame>
-    <%= render 'shared/navbar' unless landing_page %>
-    <% if flash.present? %><%= render 'shared/flash' unless landing_page %><% end %>
-    <div class="<%= landing_page ? '' : 'max-w-6xl mx-auto px-4 md:px-2 mb-8' %>">
-      <%= yield %>
-    </div>
+    <% if sign_in_page %>
+      <%= render 'shared/marfi_auth_styles' %>
+      <div class="marfi-auth-page">
+        <header class="marfi-auth-header">
+          <a class="marfi-auth-brand" href="<%= root_path %>" aria-label="MARFI Secure eSIGN home">
+            <img src="/marfi-logo.png" alt="" width="36" height="36">
+            <span>MARFI</span>
+          </a>
+          <a class="marfi-auth-back" href="<%= root_path %>">Back to portal</a>
+        </header>
+        <main class="marfi-auth-main">
+          <div class="marfi-auth-lockup" aria-hidden="true"><span>Secure</span> <span>eSIGN</span></div>
+          <section class="marfi-auth-card" aria-label="Account sign-in">
+            <%= render 'shared/flash' if flash.present? %>
+            <%= yield %>
+          </section>
+        </main>
+        <footer class="marfi-auth-footer">
+          <nav aria-label="Legal and security">
+            <a href="https://marfi.ai/legal/privacy/" target="_blank" rel="noopener">Privacy</a>
+            <a href="https://marfi.ai/legal/terms/" target="_blank" rel="noopener">Terms</a>
+            <a href="https://trust.marfi.io/monitoring" target="_blank" rel="noopener">Security</a>
+          </nav>
+          <span class="marfi-auth-attribution">Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a> · <a href="<%= Docuseal::SOURCE_URL %>" target="_blank" rel="noopener">Source</a></span>
+        </footer>
+      </div>
+    <% else %>
+      <%= render 'shared/navbar' unless landing_page %>
+      <% if flash.present? %><%= render 'shared/flash' unless landing_page %><% end %>
+      <div class="<%= landing_page ? '' : 'max-w-6xl mx-auto px-4 md:px-2 mb-8' %>">
+        <%= yield %>
+      </div>
+    <% end %>
     <%= render 'shared/body_scripts' %>
   </body>
 </html>
