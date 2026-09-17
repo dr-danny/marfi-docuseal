@@ -42,7 +42,7 @@ The pilot action also cannot create local users, link by email, grant roles/admi
 
 This branch is **not** authorization to activate or cut over authentication. Before any activation or password-removal proposal, separately obtain explicit approval and verify in a non-production pilot:
 
-1. two existing, bound test users can complete magic-link OTP and provider MFA
+1. every explicitly approved in-scope pilot user can complete magic-link OTP and any enrolled provider MFA; do not bind emergency accounts
 2. a native-MFA user is refused and can still complete native MFA
 3. invalid, expired, unverified, mismatched, unknown, archived, locked, and account-archived cases fail closed
 4. native password reset and recovery are tested end to end
@@ -51,3 +51,11 @@ This branch is **not** authorization to activate or cut over authentication. Bef
 7. a rollback consists solely of `HEXCLAVE_PILOT_ENABLED=false`, with native sign-in already verified
 
 Do not treat a disabled page, installed SDK, or this commit as activation approval.
+
+## Pilot security limits
+
+- The pilot sends `Cache-Control: no-store` and `Referrer-Policy: no-referrer`; only this page permits browser connections to `https://api.hexclave.com`. Its link performs a full navigation rather than inheriting the native page's stricter CSP through Turbo.
+- Each process permits 10 exchange attempts per IP per minute and 30 total per minute, using the existing app `RateLimit` store. A nonblocking mutex allows only one in-flight provider request per process. Excess work is rejected, not queued. These are **per-process**, not distributed limits; review aggregate limits and any shared ingress control before production activation. No Cloudflare rule is changed here.
+- Tokens longer than 8192 bytes are rejected before network activity. Successful exchanges reset the old session before signing in the mapped local user. Native SessionsController is unchanged.
+- Pilot action buttons suppress duplicate in-flight clicks. Email-link verifiers still reach the initial callback request, so deployment/proxy access-log redaction for callback query strings remains an operator gate; no browser script can erase a request already logged upstream.
+- Two independent vaulted native emergency administrators must be tested in an isolated browser and kept outside all provider bindings. This branch neither provisions them nor authorizes disabling their password routes.

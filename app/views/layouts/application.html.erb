@@ -20,7 +20,7 @@
   </head>
   <body>
     <% landing_page = controller_name == 'dashboard' && action_name == 'index' && !signed_in? %>
-    <% sign_in_page = controller_name == 'sessions' && !signed_in? %>
+    <% sign_in_page = controller_name.in?(%w[sessions hexclave_pilot]) && !signed_in? %>
     <% if params[:modal].present? %>
       <% modal_uri = Addressable::URI.parse(params[:modal]) %>
       <% url_params = Rails.application.routes.recognize_path(modal_uri.path, method: :get) %>

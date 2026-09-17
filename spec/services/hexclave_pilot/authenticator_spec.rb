@@ -58,6 +58,27 @@ RSpec.describe HexclavePilot::Authenticator do
     expect(described_class.call(access_token: token).status).to eq(:invalid_token)
   end
 
+  it 'does not follow a provider redirect' do
+    provider = stub_request(:get, HexclavePilot::Config::API_URL)
+               .to_return(status: 302, headers: { 'Location' => 'https://attacker.example/collect' })
+
+    expect(described_class.call(access_token: token).status).to eq(:invalid_token)
+    expect(provider).to have_been_requested.once
+  end
+
+  it 'refuses oversized tokens without an outbound request' do
+    expect(described_class.call(access_token: 'x' * 8193).status).to eq(:invalid_token)
+    expect(WebMock).not_to have_requested(:get, HexclavePilot::Config::API_URL)
+  end
+
+  it 'does not queue concurrent provider calls' do
+    described_class::PROVIDER_REQUEST_MUTEX.lock
+    expect(described_class.call(access_token: token).status).to eq(:invalid_token)
+    expect(WebMock).not_to have_requested(:get, HexclavePilot::Config::API_URL)
+  ensure
+    described_class::PROVIDER_REQUEST_MUTEX.unlock
+  end
+
   it 'requires a verified provider email and exact local email match' do
     stub_identity(identity(primary_email_verified: false))
     expect(described_class.call(access_token: token).status).to eq(:email_verification_failed)

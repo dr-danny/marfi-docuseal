@@ -7,7 +7,10 @@ RSpec.describe 'Hexclave pilot', type: :request do
   let(:subject) { 'provider-subject-1' }
   let(:user) { create(:user, email: 'pilot@example.test') }
 
-  before { user }
+  before do
+    user
+    RateLimit::STORE.delete_matched(/\Ahexclave-pilot-/)
+  end
 
   around do |example|
     old_values = %w[
@@ -40,6 +43,9 @@ RSpec.describe 'Hexclave pilot', type: :request do
     get hexclave_pilot_path
     expect(response).to have_http_status(:not_found)
 
+    post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" }
+    expect(response).to have_http_status(:not_found)
+
     get new_user_session_path
     expect(response.body).not_to include('Use pilot sign-in')
   end
@@ -51,6 +57,9 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(response.body).to include('project-id', 'public-key')
     expect(response.body).not_to include('secret-server-key')
     expect(response.body).to include('hexclave_pilot')
+    expect(response.headers['Content-Security-Policy']).to include("connect-src 'self' https://api.hexclave.com")
+    expect(response.headers['Cache-Control']).to include('no-store')
+    expect(response.headers['Referrer-Policy']).to eq('no-referrer')
   end
 
   it 'requires CSRF for token exchange' do
@@ -73,6 +82,35 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(response).to redirect_to(root_path)
     follow_redirect!
     expect(response).to have_http_status(:ok)
+  end
+
+  it 'accepts a real CSRF token while rotating the authenticated session' do
+    old = ActionController::Base.allow_forgery_protection
+    ActionController::Base.allow_forgery_protection = true
+    stub_identity
+    get hexclave_pilot_path
+    csrf = Nokogiri::HTML(response.body).at_css('meta[name="csrf-token"]')['content']
+    old_session_id = request.session.id.to_s
+
+    post hexclave_pilot_session_path,
+         headers: { Authorization: "Bearer #{token}", 'X-CSRF-Token' => csrf }
+
+    expect(response).to redirect_to(root_path)
+    follow_redirect!
+    expect(request.session.id.to_s).not_to eq(old_session_id)
+    expect(controller.current_user).to eq(user)
+  ensure
+    ActionController::Base.allow_forgery_protection = old
+  end
+
+  it 'throttles repeated exchanges before another provider request' do
+    provider = stub_request(:get, HexclavePilot::Config::API_URL).to_return(status: 401, body: '{}')
+
+    11.times { post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" } }
+
+    expect(response).to have_http_status(:too_many_requests)
+    expect(response.headers['Retry-After']).to eq('60')
+    expect(provider).to have_been_requested.times(10)
   end
 
   it 'filters pilot credential parameter names from logs' do

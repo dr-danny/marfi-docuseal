@@ -10,6 +10,8 @@ module HexclavePilot
   class Authenticator
     Result = Struct.new(:status, :user, keyword_init: true)
     PROVIDER_TIMEOUT_SECONDS = 3
+    MAX_TOKEN_BYTES = 8192
+    PROVIDER_REQUEST_MUTEX = Mutex.new
 
     def self.call(access_token:)
       new(access_token: access_token).call
@@ -21,7 +23,7 @@ module HexclavePilot
 
     def call
       return Result.new(status: :disabled) unless Config.available?
-      return Result.new(status: :invalid_token) if access_token.blank?
+      return Result.new(status: :invalid_token) if access_token.blank? || access_token.bytesize > MAX_TOKEN_BYTES
 
       identity = provider_identity
       return Result.new(status: :invalid_token) unless identity
@@ -46,6 +48,9 @@ module HexclavePilot
     attr_reader :access_token
 
     def provider_identity
+      acquired = PROVIDER_REQUEST_MUTEX.try_lock
+      return unless acquired
+
       response = provider_connection.get do |request|
         request.headers['X-Hexclave-Access-Type'] = 'server'
         request.headers['X-Hexclave-Project-Id'] = Config.project_id
@@ -58,6 +63,8 @@ module HexclavePilot
     rescue Faraday::Error, JSON::ParserError, TypeError
       # Fail closed. Tokens, headers and provider response bodies are never logged.
       nil
+    ensure
+      PROVIDER_REQUEST_MUTEX.unlock if acquired
     end
 
     def provider_connection

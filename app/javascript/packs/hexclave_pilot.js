@@ -35,6 +35,15 @@ if (root) {
   const setMessage = (text) => { message.textContent = text }
   const resultError = (result) => result?.status === 'error'
 
+  const bindAsync = (id, handler) => {
+    const button = document.getElementById(id)
+    button.addEventListener('click', async () => {
+      if (button.disabled) return
+      button.disabled = true
+      try { await handler() } finally { button.disabled = false }
+    })
+  }
+
   const exchange = async () => {
     const accessToken = await app.getAccessToken()
     if (!accessToken) throw new Error('The provider did not issue an access token.')
@@ -65,7 +74,7 @@ if (root) {
     return true
   }
 
-  document.getElementById('hexclave-pilot-send').addEventListener('click', async () => {
+  bindAsync('hexclave-pilot-send', async () => {
     const address = email.value.trim()
     if (!address) return setMessage('Enter your approved email address.')
 
@@ -82,7 +91,7 @@ if (root) {
     }
   })
 
-  document.getElementById('hexclave-pilot-verify').addEventListener('click', async () => {
+  bindAsync('hexclave-pilot-verify', async () => {
     const typedCode = code.value.trim().replace(/[^a-z0-9]/gi, '').toLowerCase()
     if (!nonce || typedCode.length !== 6) return setMessage('Enter the six-character code from the newest email.')
 
@@ -97,7 +106,7 @@ if (root) {
     }
   })
 
-  document.getElementById('hexclave-pilot-mfa-verify').addEventListener('click', async () => {
+  bindAsync('hexclave-pilot-mfa-verify', async () => {
     const typedCode = mfaCode.value.trim().replace(/\D/g, '')
     const attempt = window.sessionStorage.getItem('hexclave_mfa_attempt_code')
     if (!attempt || typedCode.length !== 6) return setMessage('Enter the current authenticator code.')
@@ -118,7 +127,7 @@ if (root) {
     // Do not leave an email-link verifier in the address bar or browser history.
     window.history.replaceState({}, document.title, '/hexclave/pilot')
     hide(start); hide(codeStep); show(linkStep)
-    document.getElementById('hexclave-pilot-link-verify').addEventListener('click', async () => {
+    bindAsync('hexclave-pilot-link-verify', async () => {
       setMessage('Verifying magic link...')
       try {
         const result = await app.signInWithMagicLink(linkCode, { noRedirect: true })

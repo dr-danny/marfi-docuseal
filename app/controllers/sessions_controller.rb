@@ -2,7 +2,6 @@
 
 class SessionsController < Devise::SessionsController
   before_action :configure_permitted_parameters
-  after_action :renew_session_after_native_login, only: :create
 
   around_action :with_browser_locale
 
@@ -33,12 +32,6 @@ class SessionsController < Devise::SessionsController
     end
 
     super
-  end
-
-  # Rails rotates the session id on commit while retaining Warden's newly signed-in user.
-  # It only runs for Devise's successful native password/MFA redirect response.
-  def renew_session_after_native_login
-    request.session.options[:renew] = true if response.redirect? && user_signed_in?
   end
 
   def configure_permitted_parameters
