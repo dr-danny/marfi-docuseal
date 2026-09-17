@@ -18,7 +18,7 @@ RSpec.describe 'MARFI landing page', type: :request do
     expect(html.at_css('.marfi-portal-attribution a:last-child')['href']).to eq(Docuseal::SOURCE_URL)
     expect(response.headers['X-Robots-Tag']).to include('noindex')
     expect(html.at_css('title').text.strip).to eq('MARFI Secure eSIGN')
-    expect(html.at_css('link[rel="canonical"]')['href']).to eq(root_url)
+    expect(html.at_css('link[rel="canonical"]')['href']).to eq(root_url(**Docuseal.default_url_options))
     expect(html.at_css('meta[property="og:image"]')['content']).to include('/marfi-secure-esign-social.png')
     expect(html.at_css('meta[property="og:image:width"]')['content']).to eq('1200')
     expect(html.at_css('meta[name="twitter:card"]')['content']).to eq('summary_large_image')
