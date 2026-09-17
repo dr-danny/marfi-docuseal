@@ -1,234 +1,163 @@
 <style>
-  .marfi-editorial {
-    position: relative;
+  @font-face {
+    font-family: 'MARFI Syne';
+    font-style: normal;
+    font-weight: 500 700;
+    font-display: swap;
+    src: url('/fonts/syne-500-700-latin.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'MARFI Mono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/dm-mono-500-latin.woff2') format('woff2');
+  }
+
+  .marfi-portal {
+    --ink: #08090d;
+    --paper: #f2eee7;
+    --brand: #de3c4b;
+    --brand-bright: #ff5362;
+    --pad: clamp(24px, 5vw, 84px);
+    box-sizing: border-box;
     display: flex;
-    min-height: 100vh;
-    overflow: hidden;
-    background: #f2eee7;
-    color: #08090d;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    isolation: isolate;
-  }
-
-  .marfi-editorial::before {
-    position: absolute;
-    top: 17%;
-    right: -12rem;
-    z-index: -1;
-    width: clamp(30rem, 55vw, 60rem);
-    height: clamp(30rem, 55vw, 60rem);
-    border: 1px solid rgba(222, 60, 75, .36);
-    border-radius: 50%;
-    box-shadow: 0 0 0 2rem rgba(222, 60, 75, .04), 0 0 0 7rem rgba(222, 60, 75, .035), 0 0 0 12rem rgba(222, 60, 75, .025);
-    content: '';
-  }
-
-  .marfi-editorial::after {
-    position: absolute;
-    right: -1px;
-    bottom: 0;
-    z-index: -1;
-    width: 31%;
-    height: 48%;
-    background: #de3c4b;
-    content: '';
-    clip-path: polygon(28% 0, 100% 15%, 100% 100%, 0 100%);
-    opacity: .94;
-  }
-
-  .marfi-editorial-shell {
-    display: flex;
-    width: 100%;
-    max-width: 100rem;
-    min-height: 100vh;
     flex-direction: column;
-    margin: 0 auto;
-    padding: clamp(1.5rem, 3vw, 3.25rem) clamp(1.25rem, 5vw, 6rem) 1.25rem;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 0 var(--pad);
+    color: var(--paper);
+    background: radial-gradient(ellipse at 15% 45%, #141823 0, transparent 56%), var(--ink);
+    color-scheme: dark;
   }
 
-  .marfi-editorial-header {
+  .marfi-portal *, .marfi-portal *::before, .marfi-portal *::after { box-sizing: border-box; }
+  .marfi-portal a { text-decoration: none; }
+  .marfi-portal a:focus-visible { outline: 2px solid #99e7df; outline-offset: 6px; }
+
+  .marfi-portal-header {
     display: flex;
+    align-items: center;
+    height: 88px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .14);
+  }
+
+  .marfi-portal-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'MARFI Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: .18em;
+  }
+
+  .marfi-portal-brand img { width: 36px; height: 36px; object-fit: contain; }
+
+  .marfi-portal-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr);
+    align-items: center;
+    gap: 4vw;
+    flex: 1;
+    padding: clamp(64px, 10vh, 120px) 0;
+  }
+
+  .marfi-portal h1 {
+    margin: 0 0 48px;
+    font-family: 'MARFI Syne', sans-serif;
+    font-size: clamp(72px, 10.8vw, 172px);
+    font-weight: 500;
+    letter-spacing: -.055em;
+    line-height: .94;
+  }
+
+  .marfi-portal h1 span { display: block; }
+  .marfi-portal h1 span:last-child { color: var(--brand-bright); }
+
+  .marfi-portal-signin {
+    display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(8, 9, 13, .22);
-    padding-bottom: 1.1rem;
-  }
-
-  .marfi-editorial-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: .75rem;
-    color: #08090d;
-    font-size: .9rem;
-    font-weight: 800;
-    letter-spacing: .2em;
+    gap: 42px;
+    min-width: 240px;
+    padding: 17px 18px 17px 22px;
+    border: 1px solid transparent;
+    color: var(--ink);
+    background: var(--brand);
+    font-family: 'MARFI Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .07em;
     text-transform: uppercase;
+    transition: color 240ms ease, background-color 240ms ease, border-color 240ms ease;
   }
 
-  .marfi-editorial-brand img {
-    width: 2.1rem;
-    height: 2.1rem;
-    object-fit: contain;
+  .marfi-portal-signin:hover {
+    color: var(--brand-bright);
+    border-color: var(--brand-bright);
+    background: transparent;
   }
 
-  .marfi-editorial-index {
-    color: rgba(8, 9, 13, .58);
-    font-size: .68rem;
-    font-weight: 700;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-  }
+  .marfi-portal-signin svg { width: 18px; height: 18px; }
 
-  .marfi-editorial-main {
-    display: grid;
-    flex: 1;
-    grid-template-columns: minmax(0, 1fr) minmax(15rem, .42fr);
-    align-items: center;
-    gap: 5vw;
-    padding: clamp(4rem, 11vh, 9rem) 0 clamp(3rem, 8vh, 7rem);
-  }
+  .marfi-portal-art { display: grid; place-items: center; }
+  .marfi-portal-art img { display: block; width: 100%; max-width: 390px; height: auto; opacity: .85; }
 
-  .marfi-editorial-copy {
-    position: relative;
-    z-index: 1;
-  }
-
-  .marfi-editorial h1 {
-    max-width: 70rem;
-    margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(4.4rem, 11.7vw, 13rem);
-    font-weight: 400;
-    letter-spacing: -.095em;
-    line-height: .76;
-  }
-
-  .marfi-editorial h1 span,
-  .marfi-editorial h1 em {
-    display: block;
-  }
-
-  .marfi-editorial h1 em {
-    color: #de3c4b;
-    font-style: italic;
-    letter-spacing: -.12em;
-  }
-
-  .marfi-editorial h1 strong {
-    display: block;
-    margin-left: clamp(2rem, 8vw, 10rem);
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: .64em;
-    font-weight: 800;
-    letter-spacing: -.09em;
-    line-height: .86;
-    text-transform: uppercase;
-  }
-
-  .marfi-editorial-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: .85rem;
-    margin: clamp(2.5rem, 6vh, 5rem) 0 0 clamp(2rem, 8vw, 10rem);
-    padding: 1rem 1.35rem 1rem 1.5rem;
-    border: 1px solid #08090d;
-    background: #08090d;
-    color: #f2eee7;
-    font-size: .94rem;
-    font-weight: 700;
-    transition: background .2s ease, color .2s ease, transform .2s ease;
-  }
-
-  .marfi-editorial-cta:hover,
-  .marfi-editorial-cta:focus-visible {
-    background: #de3c4b;
-    color: #08090d;
-    transform: translateY(-2px);
-  }
-
-  .marfi-editorial-cta svg {
-    width: 1.15rem;
-    height: 1.15rem;
-  }
-
-  .marfi-editorial-mark {
+  .marfi-portal-footer {
     display: flex;
-    min-height: 23rem;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid rgba(8, 9, 13, .22);
+    justify-content: flex-end;
+    padding: 22px 0;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    font-family: 'MARFI Mono', monospace;
+    font-size: 10px;
+    line-height: 1.7;
+    color: #999ba5;
   }
 
-  .marfi-editorial-mark::before {
-    width: min(24vw, 23rem);
-    height: min(24vw, 23rem);
-    border: 1px solid rgba(8, 9, 13, .3);
-    border-radius: 50%;
-    content: '';
-  }
-
-  .marfi-editorial-mark img {
-    position: absolute;
-    width: min(14vw, 13rem);
-    height: min(14vw, 13rem);
-    object-fit: contain;
-  }
-
-  .marfi-editorial-attribution {
-    align-self: flex-end;
-    color: rgba(8, 9, 13, .54);
-    font-size: .68rem;
-    letter-spacing: .04em;
-  }
-
-  .marfi-editorial-attribution a {
-    color: #08090d;
-    text-decoration: underline;
-    text-underline-offset: .2em;
-  }
+  .marfi-portal-footer a { color: #b9bac1; text-decoration: underline; text-underline-offset: 3px; }
+  .marfi-portal-footer a:hover { color: var(--paper); }
 
   @media (max-width: 760px) {
-    .marfi-editorial::after { width: 58%; height: 32%; }
-    .marfi-editorial-main { display: block; padding-top: 7rem; }
-    .marfi-editorial h1 { font-size: clamp(4rem, 18vw, 8rem); }
-    .marfi-editorial-mark { display: none; }
-    .marfi-editorial-cta { margin-left: 2rem; }
+    .marfi-portal-header { height: 76px; }
+    .marfi-portal-main { grid-template-columns: 1fr; padding: 64px 0 72px; }
+    .marfi-portal h1 { font-size: clamp(64px, 17vw, 118px); margin-bottom: 40px; }
+    .marfi-portal-art { display: none; }
+    .marfi-portal-signin { min-width: 220px; }
+    .marfi-portal-footer { font-size: 9px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marfi-portal-signin { transition: none; }
   }
 </style>
 
-<section class="marfi-editorial" aria-labelledby="marfi-editorial-title">
-  <div class="marfi-editorial-shell">
-    <header class="marfi-editorial-header">
-      <div class="marfi-editorial-brand">
-        <img src="/marfi-logo.png" alt="MARFI" width="600" height="600">
-        <span>MARFI</span>
-      </div>
-      <div class="marfi-editorial-index">01 / Secure portal</div>
-    </header>
-
-    <main class="marfi-editorial-main">
-      <div class="marfi-editorial-copy">
-        <h1 id="marfi-editorial-title">
-          <span>MARFI</span>
-          <em>Secure</em>
-          <strong>eSIGN</strong>
-        </h1>
-        <%= link_to new_user_session_path, class: 'marfi-editorial-cta' do %>
-          <span>Sign in</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M5 12h13"></path>
-            <path d="m13 6 6 6-6 6"></path>
-          </svg>
-        <% end %>
-      </div>
-
-      <div class="marfi-editorial-mark" aria-hidden="true">
-        <img src="/marfi-logo.png" alt="" width="600" height="600">
-      </div>
-    </main>
-
-    <div class="marfi-editorial-attribution">
-      Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a>
+<section class="marfi-portal" aria-label="MARFI Secure eSIGN">
+  <header class="marfi-portal-header">
+    <div class="marfi-portal-brand">
+      <img src="/marfi-logo.png" alt="" width="36" height="36">
+      <span>MARFI</span>
     </div>
-  </div>
+  </header>
+
+  <main class="marfi-portal-main">
+    <div>
+      <h1><span>Secure</span><span>eSIGN</span></h1>
+      <%= link_to new_user_session_path, class: 'marfi-portal-signin' do %>
+        <span>Sign in</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      <% end %>
+    </div>
+    <div class="marfi-portal-art" aria-hidden="true">
+      <img src="/marfi-mark-display.png" alt="" width="900" height="900">
+    </div>
+  </main>
+
+  <footer class="marfi-portal-footer">
+    <span>Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a> · <a href="<%= Docuseal::SOURCE_URL %>" target="_blank" rel="noopener">Source</a></span>
+  </footer>
 </section>
