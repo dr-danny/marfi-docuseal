@@ -40,11 +40,9 @@ RSpec.describe 'Hexclave pilot', type: :request do
   it 'does not expose the page or link when disabled' do
     ENV['HEXCLAVE_PILOT_ENABLED'] = 'false'
 
-    get hexclave_pilot_path
-    expect(response).to have_http_status(:not_found)
+    expect { get hexclave_pilot_path }.to raise_error(ActionController::RoutingError)
 
-    post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" }
-    expect(response).to have_http_status(:not_found)
+    expect { post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" } }.to raise_error(ActionController::RoutingError)
 
     get new_user_session_path
     expect(response.body).not_to include('Use pilot sign-in')
@@ -66,8 +64,7 @@ RSpec.describe 'Hexclave pilot', type: :request do
     old = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
 
-    post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" }
-    expect(response).to have_http_status(:unprocessable_content)
+    expect { post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" } }.to raise_error(ActionController::InvalidAuthenticityToken)
   ensure
     ActionController::Base.allow_forgery_protection = old
   end
@@ -114,6 +111,10 @@ RSpec.describe 'Hexclave pilot', type: :request do
   end
 
   it 'filters pilot credential parameter names from logs' do
-    expect(Rails.application.config.filter_parameters).to include(:access_token, :authorization, :nonce, :refresh_token)
+    filters = Rails.application.config.filter_parameters.grep(Regexp)
+    expect(filters.any? { |filter| filter.match?('access_token') }).to be(true)
+    expect(filters.any? { |filter| filter.match?('authorization') }).to be(true)
+    expect(filters.any? { |filter| filter.match?('nonce') }).to be(true)
+    expect(filters.any? { |filter| filter.match?('refresh_token') }).to be(true)
   end
 end
