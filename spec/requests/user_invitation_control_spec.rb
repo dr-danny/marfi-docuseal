@@ -23,7 +23,6 @@ RSpec.describe 'Self-hosted user invitation control', type: :request do
   end
 
   it 'creates a password-based administrator without sending an invitation' do
-
     expect { post users_path, params: { user: attributes, send_invitation: '0' } }.to change(User, :count).by(1)
 
     recovery = User.find_by!(email: attributes[:email])
@@ -35,7 +34,6 @@ RSpec.describe 'Self-hosted user invitation control', type: :request do
   end
 
   it 'refuses silent creation without an explicit password' do
-
     expect do
       post users_path, params: { user: attributes.except(:password), send_invitation: '0' }
     end.not_to change(User, :count)
@@ -54,6 +52,16 @@ RSpec.describe 'Self-hosted user invitation control', type: :request do
     expect(UserMailer).not_to have_received(:invitation_email)
     expect(response).to have_http_status(:unprocessable_content)
     expect(User.find_by!(email: attributes[:email]).archived_at).to be_present
+  end
+
+  it 'does not allow invitation suppression in multitenant mode' do
+    allow(Docuseal).to receive(:multitenant?).and_return(true)
+
+    expect do
+      post users_path, params: { user: attributes, send_invitation: '0' }
+    end.to change(User, :count).by(1)
+
+    expect(UserMailer).to have_received(:invitation_email).once
   end
 
   it 'does not grant provisioning permission to a viewer' do
