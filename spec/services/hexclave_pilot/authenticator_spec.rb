@@ -74,12 +74,12 @@ RSpec.describe HexclavePilot::Authenticator do
   end
 
   it 'requires a verified provider email and exact local email match' do
-    stub_identity(identity(primary_email_verified: false))
+    provider = stub_request(:get, HexclavePilot::Config::API_URL)
+                     .with { |request| request.headers['X-Hexclave-Project-Id'] == 'project-id' }
+                     .to_return(status: 200, body: identity(primary_email_verified: false).to_json)
     result = described_class.call(access_token: token)
     expect(result.status).to eq(:email_verification_failed)
-    expect(WebMock).to have_requested(:get, HexclavePilot::Config::API_URL).with(
-      headers: hash_including('X-Hexclave-Project-Id' => 'project-id')
-    )
+    expect(provider).to have_been_requested.once
 
     stub_identity(identity(primary_email: 'different@example.test'))
     expect(described_class.call(access_token: token).status).to eq(:email_mismatch)
