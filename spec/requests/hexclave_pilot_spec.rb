@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Hexclave pilot', type: :request do
   let(:token) { 'test-access-token' }
-  let(:subject) { 'provider-subject-1' }
+  let(:provider_subject) { 'provider-subject-1' }
   let(:user) { create(:user, email: 'pilot@example.test') }
 
   before do
@@ -17,12 +17,12 @@ RSpec.describe 'Hexclave pilot', type: :request do
       HEXCLAVE_PILOT_ENABLED HEXCLAVE_PILOT_PROJECT_ID
       HEXCLAVE_PILOT_PUBLISHABLE_CLIENT_KEY HEXCLAVE_PILOT_SECRET_SERVER_KEY
       HEXCLAVE_PILOT_BINDINGS_JSON
-    ].to_h { |key| [key, ENV[key]] }
+    ].index_with { |key| ENV.fetch(key, nil) }
     ENV['HEXCLAVE_PILOT_ENABLED'] = 'true'
     ENV['HEXCLAVE_PILOT_PROJECT_ID'] = 'project-id'
     ENV['HEXCLAVE_PILOT_PUBLISHABLE_CLIENT_KEY'] = 'public-key'
     ENV['HEXCLAVE_PILOT_SECRET_SERVER_KEY'] = 'secret-server-key'
-    ENV['HEXCLAVE_PILOT_BINDINGS_JSON'] = { subject => user.id }.to_json
+    ENV['HEXCLAVE_PILOT_BINDINGS_JSON'] = { provider_subject => user.id }.to_json
     example.run
   ensure
     old_values.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }

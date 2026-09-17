@@ -8,7 +8,7 @@ module HexclavePilot
   # Exchanges a short-lived client access token for a verified provider identity
   # and then permits only an explicit, currently eligible local-user binding.
   class Authenticator
-    Result = Struct.new(:status, :user, keyword_init: true)
+    Result = Struct.new(:status, :user)
     PROVIDER_TIMEOUT_SECONDS = 3
     MAX_TOKEN_BYTES = 8192
     PROVIDER_REQUEST_MUTEX = Mutex.new

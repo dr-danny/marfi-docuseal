@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe HexclavePilot::Authenticator do
   let(:token) { 'test-access-token' }
-  let(:subject) { 'provider-subject-1' }
+  let(:provider_subject) { 'provider-subject-1' }
   let(:user) { create(:user, email: 'pilot@example.test') }
 
   around do |example|
@@ -12,12 +12,12 @@ RSpec.describe HexclavePilot::Authenticator do
       HEXCLAVE_PILOT_ENABLED HEXCLAVE_PILOT_PROJECT_ID
       HEXCLAVE_PILOT_PUBLISHABLE_CLIENT_KEY HEXCLAVE_PILOT_SECRET_SERVER_KEY
       HEXCLAVE_PILOT_BINDINGS_JSON
-    ].to_h { |key| [key, ENV[key]] }
+    ].index_with { |key| ENV.fetch(key, nil) }
     ENV['HEXCLAVE_PILOT_ENABLED'] = 'true'
     ENV['HEXCLAVE_PILOT_PROJECT_ID'] = 'project-id'
     ENV['HEXCLAVE_PILOT_PUBLISHABLE_CLIENT_KEY'] = 'public-key'
     ENV['HEXCLAVE_PILOT_SECRET_SERVER_KEY'] = 'secret-server-key'
-    ENV['HEXCLAVE_PILOT_BINDINGS_JSON'] = { subject => user.id }.to_json
+    ENV['HEXCLAVE_PILOT_BINDINGS_JSON'] = { provider_subject => user.id }.to_json
     example.run
   ensure
     old_values.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
@@ -86,8 +86,9 @@ RSpec.describe HexclavePilot::Authenticator do
   it 'rejects an unknown provider subject without email-only linking' do
     stub_identity(identity(id: 'unbound-subject'))
 
-    expect { @result = described_class.call(access_token: token) }.not_to change(User, :count)
-    expect(@result.status).to eq(:unknown_subject)
+    result = nil
+    expect { result = described_class.call(access_token: token) }.not_to change(User, :count)
+    expect(result.status).to eq(:unknown_subject)
   end
 
   it 'rejects archived local users and archived accounts' do
@@ -111,8 +112,9 @@ RSpec.describe HexclavePilot::Authenticator do
   it 'returns only the explicitly bound, existing eligible user' do
     stub_identity(identity)
 
-    expect { @result = described_class.call(access_token: token) }.not_to change(User, :count)
-    expect(@result.status).to eq(:success)
-    expect(@result.user).to eq(user)
+    result = nil
+    expect { result = described_class.call(access_token: token) }.not_to change(User, :count)
+    expect(result.status).to eq(:success)
+    expect(result.user).to eq(user)
   end
 end
