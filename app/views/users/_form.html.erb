@@ -29,6 +29,14 @@
         <%= f.label :password, t('password'), class: 'label' %>
         <%= f.password_field :password, class: 'base-input' %>
       </div>
+      <div class="form-control">
+        <label class="label cursor-pointer justify-start space-x-2">
+          <%= hidden_field_tag :send_invitation, '0' %>
+          <%= check_box_tag :send_invitation, '1', params[:send_invitation] != '0', class: 'base-checkbox' %>
+          <span><%= t('send_user_invitation_email') %></span>
+        </label>
+        <span class="label-text-alt"><%= t('password_required_without_invitation') %></span>
+      </div>
     <% end %>
     <% if f.object != current_user %>
       <% if user.otp_required_for_login %>
