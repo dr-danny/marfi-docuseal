@@ -31,7 +31,7 @@ RSpec.describe 'Hexclave pilot', type: :request do
   def stub_identity
     stub_request(:get, HexclavePilot::Config::API_URL)
       .to_return(status: 200, body: {
-        id: subject,
+        id: provider_subject,
         primary_email: user.email,
         primary_email_verified: true
       }.to_json)
@@ -54,7 +54,7 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('project-id', 'public-key')
     expect(response.body).not_to include('secret-server-key')
-    expect(response.body).to include('hexclave_pilot')
+    expect(response.body).to include('hexclave-pilot-link-verify')
     expect(response.headers['Content-Security-Policy']).to include("connect-src 'self' https://api.hexclave.com")
     expect(response.headers['Cache-Control']).to include('no-store')
     expect(response.headers['Referrer-Policy']).to eq('no-referrer')

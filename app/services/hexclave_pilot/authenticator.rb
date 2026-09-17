@@ -84,7 +84,7 @@ module HexclavePilot
       verified = payload['primaryEmailVerified'] if verified.nil?
       return unless subject.is_a?(String) && subject.present?
       return unless email.is_a?(String) && email.present?
-      return unless verified == true
+      return unless verified == true || verified == false
 
       { subject: subject, email: email.strip.downcase, email_verified: verified }
     end
