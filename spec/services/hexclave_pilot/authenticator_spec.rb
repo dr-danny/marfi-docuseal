@@ -77,7 +77,9 @@ RSpec.describe HexclavePilot::Authenticator do
     stub_identity(identity(primary_email_verified: false))
     result = described_class.call(access_token: token)
     expect(result.status).to eq(:email_verification_failed)
-    expect(WebMock).to have_requested(:get, HexclavePilot::Config::API_URL).with(headers: hash_including('X-Hexclave-Project-Id' => 'project-id'))
+    expect(WebMock).to have_requested(:get, HexclavePilot::Config::API_URL).with(
+      headers: hash_including('X-Hexclave-Project-Id' => 'project-id')
+    )
 
     stub_identity(identity(primary_email: 'different@example.test'))
     expect(described_class.call(access_token: token).status).to eq(:email_mismatch)
