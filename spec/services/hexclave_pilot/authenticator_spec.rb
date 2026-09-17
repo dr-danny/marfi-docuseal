@@ -29,7 +29,7 @@ RSpec.describe HexclavePilot::Authenticator do
   end
 
   def identity(overrides = {})
-    { id: subject, primary_email: user.email, primary_email_verified: true }.merge(overrides)
+    { id: provider_subject, primary_email: user.email, primary_email_verified: true }.merge(overrides)
   end
 
   it 'fails closed when disabled or misconfigured' do

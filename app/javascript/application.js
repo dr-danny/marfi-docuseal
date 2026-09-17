@@ -288,3 +288,5 @@ safeRegisterElement('import-list', class extends HTMLElement {
     this.appElem?.remove()
   }
 })
+
+import './hexclave_pilot'
