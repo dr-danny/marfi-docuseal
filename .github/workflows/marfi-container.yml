@@ -44,7 +44,9 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          platforms: linux/amd64,linux/arm64
+          # Elestio's approved Netcup Manassas staging/production target is amd64.
+          # Keep this single-platform until an arm64 builder is separately validated.
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
