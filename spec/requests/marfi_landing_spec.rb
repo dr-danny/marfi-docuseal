@@ -4,6 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'MARFI landing page', type: :request do
   it 'shows the branded entry point with sign-in, attribution and corresponding source' do
+    create(:user)
+
     get '/'
 
     expect(response).to have_http_status(:ok)
