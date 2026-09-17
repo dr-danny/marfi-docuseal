@@ -1,12 +1,12 @@
 <meta name="robots" content="noindex, nofollow">
-<% title = content_for(:html_title) || (signed_in? ? Docuseal.product_name : 'MARFI Secure eSign') %>
+<% title = content_for(:html_title) || (signed_in? ? Docuseal.product_name : 'MARFI Secure eSIGN') %>
 <% description = content_for(:html_description) || 'Private document signing for MARFI.' %>
 <meta name="description" content="<%= description %>">
 <meta property="og:title" content="<%= title %>">
 <meta property="og:description" content="<%= description %>">
 <meta property="og:type" content="website">
 <meta property="og:url" content="<%= root_url %>">
-<meta property="og:site_name" content="MARFI Secure eSign">
+<meta property="og:site_name" content="MARFI Secure eSIGN">
 <% if content_for(:disable_image_preview) %>
   <meta property="og:image" content="">
   <meta name="twitter:image" content="">
