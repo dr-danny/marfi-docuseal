@@ -19,6 +19,7 @@
     <%= stylesheet_pack_tag 'application', media: 'all' %>
   </head>
   <body>
+    <% landing_page = controller_name == 'dashboard' && action_name == 'index' && !signed_in? %>
     <% if params[:modal].present? %>
       <% modal_uri = Addressable::URI.parse(params[:modal]) %>
       <% url_params = Rails.application.routes.recognize_path(modal_uri.path, method: :get) %>
@@ -28,9 +29,9 @@
     <% end %>
     <turbo-frame id="modal"></turbo-frame>
     <turbo-frame id="drawer"></turbo-frame>
-    <%= render 'shared/navbar' %>
-    <% if flash.present? %><%= render 'shared/flash' %><% end %>
-    <div class="max-w-6xl mx-auto px-4 md:px-2 mb-8">
+    <%= render 'shared/navbar' unless landing_page %>
+    <% if flash.present? %><%= render 'shared/flash' unless landing_page %><% end %>
+    <div class="<%= landing_page ? '' : 'max-w-6xl mx-auto px-4 md:px-2 mb-8' %>">
       <%= yield %>
     </div>
     <%= render 'shared/body_scripts' %>

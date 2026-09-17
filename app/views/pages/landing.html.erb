@@ -1,79 +1,162 @@
-<section class="flex items-center justify-center">
-  <div class="py-10 mx-auto max-w-7xl">
-    <div class="max-w-xl mx-auto">
-      <div class="text-center">
-        <div class="relative flex flex-col items-center">
-          <img src="/marfi-logo.png" alt="MARFI" width="100" height="100" class="object-contain">
-          <h1 class="text-6xl font-bold mt-4 mb-4">
-            MARFI Secure eSign
-          </h1>
-          <% if Docuseal.version.present? %>
-            <a href="https://github.com/docusealco/docuseal/releases" target="_blank" class="badge badge-outline badge-lg block mx-auto">
-              v<%= Docuseal.version %>
-            </a>
-          <% end %>
-        </div>
-        <h2 class="mt-4 mb-16 text-lg text-center text-gray-600">
-          A self-hosted and open-source web platform that provides secure and efficient digital document signing and processing.
-        </h2>
-      </div>
+<style>
+  .marfi-splash {
+    position: relative;
+    display: flex;
+    min-height: calc(100vh - 4rem);
+    align-items: center;
+    overflow: hidden;
+    background: #08090d;
+    color: #f8f7f4;
+    isolation: isolate;
+  }
+
+  .marfi-splash::before {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-image: linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    content: '';
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .95), transparent 90%);
+  }
+
+  .marfi-splash::after {
+    position: absolute;
+    top: -18rem;
+    right: -16rem;
+    z-index: -1;
+    width: 48rem;
+    height: 48rem;
+    border: 1px solid rgba(232, 72, 78, .35);
+    border-radius: 9999px;
+    box-shadow: 0 0 0 5rem rgba(232, 72, 78, .035), 0 0 0 10rem rgba(232, 72, 78, .025), 0 0 0 15rem rgba(232, 72, 78, .018);
+    content: '';
+  }
+
+  .marfi-splash-shell {
+    width: 100%;
+    max-width: 90rem;
+    margin: 0 auto;
+    padding: 4rem 2rem 5rem;
+  }
+
+  .marfi-splash-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .8rem;
+    color: #f8f7f4;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .marfi-splash-brand img {
+    width: 2.65rem;
+    height: 2.65rem;
+    object-fit: contain;
+  }
+
+  .marfi-splash-content {
+    max-width: 65rem;
+    margin-top: clamp(5rem, 15vh, 10rem);
+  }
+
+  .marfi-splash-kicker {
+    margin-bottom: 1.5rem;
+    color: #e8484e;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+  }
+
+  .marfi-splash h1 {
+    max-width: 64rem;
+    margin: 0;
+    color: #f8f7f4;
+    font-size: clamp(4rem, 10vw, 9.5rem);
+    font-weight: 700;
+    letter-spacing: -.085em;
+    line-height: .86;
+  }
+
+  .marfi-splash h1 span {
+    display: block;
+    color: #e8484e;
+  }
+
+  .marfi-splash-signin {
+    display: inline-flex;
+    align-items: center;
+    gap: .8rem;
+    margin-top: 3rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid #e8484e;
+    border-radius: 9999px;
+    background: #e8484e;
+    color: #08090d;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+
+  .marfi-splash-signin:hover,
+  .marfi-splash-signin:focus-visible {
+    border-color: #ff6c70;
+    background: #ff6c70;
+    color: #08090d;
+    transform: translateY(-2px);
+  }
+
+  .marfi-splash-signin svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .marfi-splash-attribution {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.5rem;
+    color: rgba(248, 247, 244, .42);
+    font-size: .7rem;
+    letter-spacing: .04em;
+  }
+
+  .marfi-splash-attribution a {
+    color: rgba(248, 247, 244, .68);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
+
+  @media (max-width: 640px) {
+    .marfi-splash-shell { padding: 2rem 1.25rem 4rem; }
+    .marfi-splash-content { margin-top: 8rem; }
+    .marfi-splash-attribution { right: 1.25rem; bottom: 1rem; }
+  }
+</style>
+
+<section class="marfi-splash" aria-labelledby="marfi-splash-title">
+  <div class="marfi-splash-shell">
+    <div class="marfi-splash-brand">
+      <img src="/marfi-logo.png" alt="MARFI" width="600" height="600">
+      <span>MARFI</span>
     </div>
-    <div class="grid grid-cols-1 gap-12 md:gap-10 md:grid-cols-2">
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-center transition-all">
-            <div class="inline-block p-4 mb-4 -mt-16 bg-base-content rounded-full">
-              <%= svg_icon('brand_docker', class: 'w-10 h-10 text-base-100 stroke-1') %>
-            </div>
-            <h3 class="mb-4 text-2xl font-semibold">Easy to Start</h3>
-            <p class="text-base text-gray-500">
-              Run on your own host using Docker container, or deploy on  your favorite managed PaaS with a single <a href="https://www.docuseal.com/install" class="link link-neutral font-bold">click</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-center transition-all">
-            <div class="inline-block p-4 mb-4 -mt-16 bg-base-content rounded-full">
-              <%= svg_icon('devices', class: 'w-10 h-10 text-base-100') %>
-            </div>
-            <h3 class="mb-4 text-2xl font-semibold">Mobile Optimized</h3>
-            <p class="text-base text-gray-500">
-              Review and sign digital documents online from any device.
-              Docuseal document forms are optimized for screens of all sizes.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-center transition-all">
-            <div class="inline-block p-4 mb-4 -mt-16 bg-base-content rounded-full">
-              <%= svg_icon('shield_check', class: 'w-10 h-10 text-base-100') %>
-            </div>
-            <h3 class="mb-4 text-2xl font-semibold">Secure</h3>
-            <p class="text-base text-gray-500">
-              Host it on your hardware under a VPN to ensure that important documents can be accesses only within your organization.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-center transition-all">
-            <div class="inline-block p-4 mb-4 -mt-16 bg-base-content rounded-full">
-              <%= svg_icon('brand_github', class: 'w-10 h-10 text-base-100') %>
-            </div>
-            <h3 class="mb-4 text-2xl font-semibold">Open Source</h3>
-            <p class="text-base text-gray-500">
-              Source code is available under <a href="<%= Docuseal::GITHUB_URL %>" class="link link-neutral font-bold" target="_blank">github.com/docusealco</a>.<br>
-              Open-source contributors are always ready to help!
-            </p>
-          </div>
-        </div>
-      </div>
+
+    <div class="marfi-splash-content">
+      <div class="marfi-splash-kicker">Private document signing</div>
+      <h1 id="marfi-splash-title">MARFI Secure <span>eSign</span></h1>
+      <%= link_to new_user_session_path, class: 'marfi-splash-signin' do %>
+        <span>Sign in</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h13"></path>
+          <path d="m13 6 6 6-6 6"></path>
+        </svg>
+      <% end %>
     </div>
   </div>
+
+  <div class="marfi-splash-attribution">
+    Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a>
+  </div>
 </section>
-<%= render 'shared/attribution', with_counter: true %>
