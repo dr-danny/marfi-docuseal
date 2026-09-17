@@ -6,6 +6,8 @@ class UsersController < ApplicationController
   before_action :build_user, only: %i[new create]
   authorize_resource :user, only: %i[new create]
 
+  before_action :validate_invitation_password, only: :create
+
   def index
     @users =
       if params[:status] == 'archived'
@@ -36,18 +38,10 @@ class UsersController < ApplicationController
   def edit; end
 
   def create
-    send_invitation = Docuseal.multitenant? || params[:send_invitation] != '0'
-
-    if !send_invitation && @user.password.blank?
-      @user.errors.add(:password, :blank)
-
-      return render turbo_stream: turbo_stream.replace(:modal, template: 'users/new'), status: :unprocessable_content
-    end
-
     existing_user = User.accessible_by(current_ability).find_by(email: @user.email)
 
     if existing_user
-      if send_invitation && existing_user.archived_at? &&
+      if send_invitation? && existing_user.archived_at? &&
          current_ability.can?(:manage, existing_user) && current_ability.can?(:manage, @user.account)
         existing_user.assign_attributes(@user.slice(:first_name, :last_name, :role, :account_id))
         existing_user.archived_at = nil
@@ -63,9 +57,7 @@ class UsersController < ApplicationController
     @user.role = User::ADMIN_ROLE unless role_valid?(@user.role)
 
     if @user.save
-      UserMailer.invitation_email(@user).deliver_later! if send_invitation
-
-      notice = I18n.t(send_invitation ? 'user_has_been_invited' : 'user_created_without_invitation')
+      notice = deliver_user_invitation
 
       redirect_back fallback_location: settings_users_path, notice:
     else
@@ -114,6 +106,24 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def send_invitation?
+    Docuseal.multitenant? || params[:send_invitation] != '0'
+  end
+
+  def validate_invitation_password
+    return if send_invitation? || @user.password.present?
+
+    @user.errors.add(:password, :blank)
+
+    render turbo_stream: turbo_stream.replace(:modal, template: 'users/new'), status: :unprocessable_content
+  end
+
+  def deliver_user_invitation
+    UserMailer.invitation_email(@user).deliver_later! if send_invitation?
+
+    I18n.t(send_invitation? ? 'user_has_been_invited' : 'user_created_without_invitation')
+  end
 
   def role_valid?(role)
     User::ROLES.include?(role)
