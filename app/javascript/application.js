@@ -1,3 +1,4 @@
+import './hexclave_pilot'
 import '@hotwired/turbo'
 import { encodeMethodIntoRequestBody } from '@hotwired/turbo-rails/app/javascript/turbo/fetch_requests'
 
@@ -288,5 +289,3 @@ safeRegisterElement('import-list', class extends HTMLElement {
     this.appElem?.remove()
   }
 })
-
-import './hexclave_pilot'
