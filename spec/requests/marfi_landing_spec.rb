@@ -31,6 +31,7 @@ RSpec.describe 'MARFI landing page', type: :request do
     expect(html.at_css('.marfi-portal-legal a:nth-child(3)')['href']).to eq('https://trust.marfi.io/monitoring')
     expect(html.text).not_to include('Private document signing', '01 / Secure portal')
   end
+
   it 'serves a MARFI-branded install manifest' do
     get '/manifest.json'
 
