@@ -1,1 +1,8 @@
-<%= MarkdownToHtml.call(ReplaceEmailVariables.call(local_assigns[:content], submitter: local_assigns[:submitter], sig: local_assigns[:sig])) %>
+<% content = ReplaceEmailVariables.call(local_assigns[:content], submitter: local_assigns[:submitter], sig: local_assigns[:sig]) %>
+<% if EmailMessages.html_body?(content) || content.match?(/\A\s*(?:<!doctype\s+html|<html|<table|<div|<p|<span)/i) %>
+  <%= sanitize content,
+               tags: %w[html head body meta title table thead tbody tfoot tr td th div p span h1 h2 h3 strong b em i u s br a img ul ol li],
+               attributes: %w[charset name content http-equiv role width height cellspacing cellpadding border align valign bgcolor style href src alt title target rel] %>
+<% else %>
+  <%= MarkdownToHtml.call(content) %>
+<% end %>

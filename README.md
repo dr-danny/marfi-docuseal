@@ -1,15 +1,16 @@
 <h1 align="center" style="border-bottom: none">
   <div>
-    <a href="https://www.docuseal.com">
-      <img  alt="DocuSeal" src="https://github.com/user-attachments/assets/38b45682-ffa4-4919-abde-d2d422325c44" width="80" />
-      <br>
-    </a>
-    DocuSeal
+    <img alt="MARFI" src="public/marfi-logo.png" width="80" />
+    <br>
+    MARFI Secure eSign
   </div>
 </h1>
 <h3 align="center">
-  Open source document filling and signing
+  MARFI-maintained OSS fork of DocuSeal for secure document filling and signing
 </h3>
+<p align="center">
+  This repository is based on the <a href="https://github.com/docusealco/docuseal">DocuSeal open source project</a> and retains its attribution.
+</p>
 <p align="center">
   <a href="https://hub.docker.com/r/docuseal/docuseal">
     <img alt="Docker releases" src="https://img.shields.io/docker/v/docuseal/docuseal">
@@ -46,9 +47,15 @@ DocuSeal is an open source platform that provides secure and efficient digital d
 - API and Webhooks for integrations
 - Easy to deploy in minutes
 
-## Pro Features
-- Company logo and white-label
-- User roles
+## MARFI OSS additions
+- MARFI branding and noindex defaults for the private portal
+- Free internal admin, editor, and viewer roles
+- Safe rendering of OSS-compatible HTML notification templates
+
+Enterprise and Pro components are not included. Existing integrations must be validated against this fork before production use.
+
+## Upstream Pro features not included
+- Company logo and white-label controls
 - Automated reminders
 - Invitation and identity verification via SMS
 - Conditional fields and formulas
@@ -95,10 +102,11 @@ At DocuSeal we have expertise and technologies to make documents creation, filli
 
 [Book a Meeting](https://www.docuseal.com/contact)
 
-## License
+## License and corresponding source
 
-Distributed under the AGPLv3 License with Section 7(b) Additional Terms. See [LICENSE](https://github.com/docusealco/docuseal/blob/master/LICENSE) and [LICENSE_ADDITIONAL_TERMS](https://github.com/docusealco/docuseal/blob/master/LICENSE_ADDITIONAL_TERMS) for more information.
-Unless otherwise noted, all files © 2023-2026 DocuSeal LLC.
+Distributed under the AGPLv3 License with Section 7(b) Additional Terms. See [LICENSE](LICENSE) and [LICENSE_ADDITIONAL_TERMS](LICENSE_ADDITIONAL_TERMS) for more information.
+This fork retains DocuSeal's interactive attribution and copyright notices. MARFI modifications are available in this repository as the corresponding source for users of the hosted service.
+Unless otherwise noted, upstream files are © 2023-2026 DocuSeal LLC. MARFI modifications are © 2026 MARFI Systems, Inc.
 
 ## Tools
 

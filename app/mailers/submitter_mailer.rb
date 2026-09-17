@@ -288,20 +288,15 @@ class SubmitterMailer < ApplicationMailer
   end
 
   def from_address_for_submitter(submitter)
-    if submitter.submission.source.in?(%w[api embed]) &&
-       (from_email = AccountConfig.find_by(account: submitter.account, key: 'integration_from_email')&.value.presence)
-      user = submitter.account.users.find_by(email: from_email)
+    # MARFI's outbound sender is stable across internal users and integrations.
+    # Reply routing remains tied to the originating user below.
+    configured_from = ENV['MAILER_FROM'].presence
+    return configured_from if configured_from
 
-      put_metadata('from_user_id' => user.id)
+    user = submitter.submission.created_by_user || submitter.submission.template.author
+    put_metadata('from_user_id' => user.id) if user
 
-      from_email
-    else
-      user = submitter.submission.created_by_user || submitter.submission.template.author
-
-      put_metadata('from_user_id' => user.id)
-
-      user.friendly_name
-    end
+    'MARFI Systems <danny@marfi.io>'
   end
 
   def fetch_config_email_body(email_config, _submitter = nil)
