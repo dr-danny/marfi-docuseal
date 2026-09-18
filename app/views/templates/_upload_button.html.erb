@@ -1,17 +1,13 @@
 <%= form_for '', url: templates_upload_path, id: form_id = SecureRandom.uuid, method: :post, class: 'inline', html: { enctype: 'multipart/form-data' } do %>
-  <label for="upload_template" id="templates_upload_button" class="btn btn-ghost text-base">
+  <label for="upload_template" id="templates_upload_button" class="marfi-app-action" title="<%= t('upload') %>" aria-label="<%= t('upload') %>">
     <button type="submit" class="hidden peer"></button>
-    <span class="peer-disabled:hidden">
-      <span class="flex items-center justify-center space-x-2">
-        <%= svg_icon('upload', class: 'w-6 h-6 stroke-2') %>
-        <span class="hidden md:block"><%= t('upload') %></span>
-      </span>
+    <span class="peer-disabled:hidden flex items-center justify-center">
+      <%= svg_icon('upload', class: 'w-5 h-5 stroke-2') %>
+      <span class="marfi-app-action-label"><%= t('upload') %></span>
     </span>
-    <span class="peer-enabled:hidden">
-      <span class="flex items-center justify-center space-x-2">
-        <%= local_assigns[:icon_disabled] || svg_icon('loader', class: 'w-5 h-5 animate-spin') %>
-        <span class="hidden md:block"><%= t('upload') %>...</span>
-      </span>
+    <span class="peer-enabled:hidden flex items-center justify-center">
+      <%= local_assigns[:icon_disabled] || svg_icon('loader', class: 'w-5 h-5 animate-spin') %>
+      <span class="marfi-app-action-label"><%= t('upload') %>...</span>
     </span>
   </label>
   <input type="hidden" name="form_id" value="<%= form_id %>">

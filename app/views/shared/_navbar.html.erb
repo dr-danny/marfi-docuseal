@@ -25,23 +25,27 @@
               <%= render 'shared/search_input' %>
             </div>
           <% end %>
-          <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
-            <span class="hidden sm:block">
-              <%= render 'templates/upload_button', folder_name: @template_folder&.full_name %>
-            </span>
-            <open-modal-mobile data-disabled="<%= !Docuseal.multitenant? %>" class="flex">
-              <%= link_to new_template_path({ folder_name: @template_folder&.full_name }.compact),
-                          class: 'white-button !border gap-2', data: { turbo_frame: :modal } do %>
-                <%= svg_icon('plus', class: 'w-5 h-5 stroke-2') %>
-                <span class="hidden md:block"><%= t('create') %></span>
+          <% if marfi_dashboard_nav? || (marfi_dashboard_actions? && can?(:create, ::Template)) %>
+            <div class="marfi-app-actions">
+              <% if marfi_dashboard_nav? %>
+                <%= render 'dashboard/toggle_view', selected: marfi_dashboard_selected %>
               <% end %>
-            </open-modal-mobile>
-          <% end %>
-          <% if marfi_dashboard_nav? %>
-            <%= render 'dashboard/toggle_view', selected: marfi_dashboard_selected %>
+              <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
+                <%= render 'templates/upload_button', folder_name: @template_folder&.full_name %>
+                <open-modal-mobile data-disabled="<%= !Docuseal.multitenant? %>" class="flex">
+                  <%= link_to new_template_path({ folder_name: @template_folder&.full_name }.compact),
+                              class: 'marfi-app-action is-create',
+                              title: t('create'),
+                              aria: { label: t('create') },
+                              data: { turbo_frame: :modal } do %>
+                    <%= svg_icon('plus', class: 'w-5 h-5 stroke-2') %>
+                    <span class="marfi-app-action-label"><%= t('create') %></span>
+                  <% end %>
+                </open-modal-mobile>
+              <% end %>
+            </div>
           <% end %>
           <%= render 'shared/navbar_buttons' %>
-          <%= link_to t('settings'), settings_profile_index_path, class: 'hidden md:inline-flex font-medium text-lg', id: 'account_settings_button' %>
         </div>
       <% end %>
       <div class="dropdown dropdown-end">
@@ -49,16 +53,10 @@
           <span><%= current_user.initials %></span>
         </label>
         <ul tabindex="0" class="z-10 dropdown-content p-2 mt-2 shadow menu text-base bg-base-100 rounded-box min-w-[160px] text-right">
-          <li class="md:hidden">
-            <%= link_to settings_path, class: 'flex items-center' do %>
+          <li>
+            <%= link_to settings_profile_index_path, id: 'account_settings_button', class: 'flex items-center' do %>
               <%= svg_icon('adjustments', class: 'w-5 h-5 flex-shrink-0 stroke-2') %>
               <span class="mr-1"><%= t('settings') %></span>
-            <% end %>
-          </li>
-          <li class="hidden md:list-item">
-            <%= link_to settings_profile_index_path, class: 'flex items-center' do %>
-              <%= svg_icon('adjustments', class: 'w-5 h-5 flex-shrink-0 stroke-2') %>
-              <span class="mr-1"><%= t('profile') %></span>
             <% end %>
           </li>
           <% if can?(:read, EncryptedConfig.new(key: EncryptedConfig::ESIGN_CERTS_KEY, account: current_account)) %>
