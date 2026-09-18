@@ -191,10 +191,3 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(filters.any? { |filter| filter.match?('refresh_token') }).to be(true)
   end
 end
-)
-    expect(filters.any? { |filter| filter.match?('access_token') }).to be(true)
-    expect(filters.any? { |filter| filter.match?('authorization') }).to be(true)
-    expect(filters.any? { |filter| filter.match?('nonce') }).to be(true)
-    expect(filters.any? { |filter| filter.match?('refresh_token') }).to be(true)
-  end
-end
