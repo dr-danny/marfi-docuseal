@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   # unless every required environment value and explicit binding is present.
   resource :hexclave_pilot, only: :show, path: 'hexclave/pilot', controller: 'hexclave_pilot'
   post 'hexclave/pilot/session', to: 'hexclave_pilot#create', as: :hexclave_pilot_session
+  get 'handler/oauth-callback', to: 'sessions#new'
 
   namespace :api, defaults: { format: :json } do
     resource :user, only: %i[show]

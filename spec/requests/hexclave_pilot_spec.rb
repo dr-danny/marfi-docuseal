@@ -68,6 +68,17 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(response.body).not_to include('canary-secret-server-key')
   end
 
+  it 'serves the GitHub OAuth callback on the branded sign-in page' do
+    get '/handler/oauth-callback'
+
+    expect(response).to have_http_status(:ok)
+    html = Nokogiri::HTML(response.body)
+    expect(html.at_css('#hexclave-pilot-github')).to be_present
+    expect(response.headers['Content-Security-Policy']).to include(
+      "connect-src 'self' #{HexclavePilot::Config::BROWSER_CONNECT_ORIGINS.join(' ')}"
+    )
+  end
+
   it 'defaults to the staging project and never renders any server secret' do
     ENV.delete('HEXCLAVE_PILOT_PROJECT_ID')
     ENV['HEXCLAVE_PILOT_SECRET_SERVER_KEY'] = 'canary-secret-server-key'

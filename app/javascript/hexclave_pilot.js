@@ -4,7 +4,8 @@ const root = document.getElementById('hexclave-pilot')
 
 if (root) {
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content
-  const fixedCallbackUrl = `${window.location.origin}/hexclave/pilot`
+  const signInPath = '/sign_in'
+  const fixedCallbackUrl = `${window.location.origin}${signInPath}`
   const allowedDomain = root.dataset.allowedDomain || 'marfi.io'
   const app = new HexclaveClientApp({
     baseUrl: 'https://apigcp.hexclave.com',
@@ -14,10 +15,12 @@ if (root) {
     // cookie, localStorage, sessionStorage, URL, or Rails session.
     tokenStore: 'memory',
     urls: {
-      signIn: '/hexclave/pilot',
-      afterSignIn: '/hexclave/pilot',
-      magicLinkCallback: '/hexclave/pilot',
-      mfa: '/hexclave/pilot'
+      signIn: signInPath,
+      afterSignIn: signInPath,
+      magicLinkCallback: signInPath,
+      mfa: signInPath,
+      oauthCallback: '/handler/oauth-callback',
+      error: signInPath
     }
   })
 
@@ -164,10 +167,16 @@ if (root) {
   const query = new URLSearchParams(window.location.search)
   const linkCode = query.get('code')
   const oauthState = query.get('state')
-  if (linkCode && oauthState) {
-    // OAuth redirect return. Do not leave verifier material in the address bar
-    // or browser history.
-    window.history.replaceState({}, document.title, '/hexclave/pilot')
+  const oauthError = query.get('errorCode') || query.get('error')
+  const stripQuery = () => window.history.replaceState({}, document.title, signInPath)
+  if (oauthError) {
+    const raw = query.get('message') || query.get('error_description') || ''
+    stripQuery()
+    setMessage(raw.includes('already used')
+      ? 'GitHub uses an email already on this MARFI login. Try GitHub again.'
+      : (raw || 'GitHub sign-in was not accepted.'))
+  } else if (linkCode && oauthState) {
+    stripQuery()
     hide(start); hide(codeStep)
     setMessage('Completing GitHub sign-in...')
     app.callOAuthCallback().then(async (handled) => {
@@ -177,8 +186,7 @@ if (root) {
       if (!showMfaIfPending(error)) setMessage(error?.humanReadableMessage || 'GitHub sign-in was not accepted.')
     })
   } else if (linkCode) {
-    // Do not leave an email-link verifier in the address bar or browser history.
-    window.history.replaceState({}, document.title, '/hexclave/pilot')
+    stripQuery()
     hide(start); hide(codeStep); show(linkStep)
     bindAsync('hexclave-pilot-link-verify', async () => {
       setMessage('Verifying magic link...')
