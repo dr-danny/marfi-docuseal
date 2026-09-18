@@ -20,6 +20,9 @@ class Ability
   def configure_viewer(user)
     scope = account_scope(user)
 
+    can :index, Template
+    can :index, Submission
+    can :index, Submitter
     can :read, Template, Abilities::DocumentVisibility.granted_templates(user)
     can :read, TemplateFolder, scope
     can :read, TemplateSharing, template_id: TemplateAccess.where(user_id: user.id).select(:template_id)
@@ -33,6 +36,9 @@ class Ability
     own = { author_id: user.id, account_id: user.account_id }
     own_submissions = { created_by_user_id: user.id, account_id: user.account_id }
 
+    can :index, Template
+    can :index, Submission
+    can :index, Submitter
     can :create, Template, scope
     can %i[update destroy], Template, own
     can :read, Template, Abilities::DocumentVisibility.visible_templates(user)
