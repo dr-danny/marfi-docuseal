@@ -17,7 +17,7 @@
     <div class="space-y-2" dir="auto">
       <div class="form-control">
         <%= f.label :email, t(:email), class: 'label' %>
-        <%= f.email_field :email, autofocus: !hexclave_available, autocomplete: 'email', class: 'base-input', id: ('native-signin-email' if hexclave_available) %>
+        <%= f.email_field :email, { autofocus: !hexclave_available, autocomplete: 'email', class: 'base-input' }.merge(hexclave_available ? { id: 'native-signin-email' } : {}) %>
       </div>
       <div class="form-control">
         <%= f.label :password, t(:password), class: 'label' %>
