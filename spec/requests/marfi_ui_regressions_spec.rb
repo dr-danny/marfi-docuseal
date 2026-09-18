@@ -59,6 +59,28 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(response.body).not_to include('Secure eSign')
   end
 
+  it 'hides Console, Ask AI, and Test mode from signed-in chrome' do
+    user = create(:user, role: 'superadmin')
+    sign_in user
+
+    get settings_profile_index_path
+
+    expect(response).to have_http_status(:ok)
+    html = Nokogiri::HTML(response.body)
+    visible_text = html.text.gsub(/\s+/, ' ')
+    menu_labels = html.css('#account_settings_menu a, .dropdown-content a, .dropdown-content span, .dropdown-content label').map { |node| node.text.strip }.reject(&:blank?)
+
+    expect(menu_labels).not_to include('Console')
+    expect(menu_labels).not_to include('Ask AI')
+    expect(menu_labels).not_to include('Test mode')
+    expect(visible_text).not_to include('Ask AI')
+    expect(visible_text).not_to include('Test mode')
+    expect(response.body).not_to include(Docuseal::CONSOLE_URL)
+    expect(response.body).not_to include(Docuseal::CHATGPT_URL)
+    expect(html.at_css('.dropdown-content')&.text).to include('Profile')
+    expect(html.at_css('.dropdown-content')&.text).to include('Sign out')
+  end
+
   it 'keeps the AGPL corresponding-source notice in transactional email attribution' do
     html = ApplicationController.render(partial: 'shared/email_attribution')
 
