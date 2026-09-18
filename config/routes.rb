@@ -27,7 +27,6 @@ Rails.application.routes.draw do
   # unless every required environment value and explicit binding is present.
   resource :hexclave_pilot, only: :show, path: 'hexclave/pilot', controller: 'hexclave_pilot'
   post 'hexclave/pilot/session', to: 'hexclave_pilot#create', as: :hexclave_pilot_session
-  get 'handler/oauth-callback', to: 'sessions#new'
 
   namespace :api, defaults: { format: :json } do
     resource :user, only: %i[show]
@@ -232,6 +231,10 @@ Rails.application.routes.draw do
   match '/mcp', to: 'mcp#call', via: %i[get post]
 
   get '/js/:filename', to: 'embed_scripts#show', as: :embed_script
+
+  ActiveSupport.run_load_hooks(:routes, self)
+end
+lename', to: 'embed_scripts#show', as: :embed_script
 
   ActiveSupport.run_load_hooks(:routes, self)
 end
