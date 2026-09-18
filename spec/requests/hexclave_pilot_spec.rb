@@ -45,6 +45,23 @@ RSpec.describe 'Hexclave pilot', type: :request do
 
     get new_user_session_path
     expect(response.body).not_to include('Use pilot sign-in')
+    expect(response.body).not_to include('hexclave-pilot-github')
+  end
+
+  it 'renders passwordless methods on the branded native sign-in page' do
+    ENV['HEXCLAVE_PILOT_SECRET_SERVER_KEY'] = 'canary-secret-server-key'
+
+    get new_user_session_path
+
+    html = Nokogiri::HTML(response.body)
+    expect(html.at_css('.marfi-auth-page')).to be_present
+    expect(html.at_css('#hexclave-pilot-email')).to be_present
+    expect(html.at_css('#hexclave-pilot-send')).to be_present
+    expect(html.at_css('#hexclave-pilot-github')).to be_present
+    expect(html.at_css('#hexclave-pilot-passkey')).to be_present
+    expect(html.at_css('.marfi-auth-card input[name="user[password]"]')).to be_present
+    expect(html.at_css('.marfi-auth-card form')['action']).to eq(user_session_path)
+    expect(response.body).not_to include('canary-secret-server-key')
   end
 
   it 'defaults to the staging project and never renders any server secret' do
