@@ -71,7 +71,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
     dropdown = html.at_css('.dropdown-content')&.text.to_s
     settings_menu = html.at_css('#account_settings_menu')&.text.to_s
 
-    expect(dropdown).to include('Profile')
+    expect(dropdown).to include('Settings')
     expect(dropdown).to include('Sign out')
     expect(dropdown).not_to include('Console')
     expect(dropdown).not_to include('Ask AI')
