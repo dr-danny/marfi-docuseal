@@ -22,7 +22,7 @@
         <div class="flex items-center justify-end gap-3 min-w-0">
           <% if marfi_dashboard_search? %>
             <div class="marfi-app-header-search">
-              <%= render 'shared/search_input' %>
+              <%= render 'shared/search_input', placeholder: t('search') %>
             </div>
           <% end %>
           <% if marfi_dashboard_nav? || (marfi_dashboard_actions? && can?(:create, ::Template)) %>

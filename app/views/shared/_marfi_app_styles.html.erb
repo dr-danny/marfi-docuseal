@@ -38,8 +38,20 @@
   }
   .marfi-app-header a { color: #f2eee7; }
   .marfi-app-header a:hover { color: #ff5362; }
-  .marfi-app-header .dropdown-content a { color: #08090d; }
-  .marfi-app-header .dropdown-content a:hover { color: #de3c4b; background: #f2eee7; }
+  .marfi-app-header .dropdown-content {
+    color: #08090d;
+    background: #fff;
+  }
+  .marfi-app-header .dropdown-content a,
+  .marfi-app-header .dropdown-content button {
+    color: #08090d;
+    opacity: 1;
+  }
+  .marfi-app-header .dropdown-content a:hover,
+  .marfi-app-header .dropdown-content button:hover {
+    color: #de3c4b;
+    background: #f7f4ee;
+  }
 
   .marfi-app-header-search { min-width: 0; }
   .marfi-app-header-search .input {
@@ -219,6 +231,14 @@
     border-color: rgba(8, 9, 13, .16) !important;
   }
   .marfi-dropzone-area:hover { background: #fff; border-color: #de3c4b !important; }
+
+  .marfi-submissions-list {
+    flex: 1;
+    min-height: 380px;
+    background: #fff;
+    border: 1px solid rgba(8, 9, 13, .1);
+    padding: 16px 24px;
+  }
 
   .marfi-app-footer {
     display: flex;
