@@ -48,7 +48,7 @@ RSpec.describe HexclavePilot::Authenticator do
                    request.headers['X-Hexclave-Project-Id'] == 'project-id' &&
                    request.headers['X-Hexclave-Publishable-Client-Key'] == 'public-key' &&
                    !request.headers.key?('X-Hexclave-Secret-Server-Key') &&
-                   !request.headers.values.include?('canary-secret-server-key')
+                   !request.headers.value?('canary-secret-server-key')
                end
                .to_return(status: 200, body: identity.to_json)
 

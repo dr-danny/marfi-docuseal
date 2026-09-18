@@ -15,7 +15,7 @@ module HexclavePilot
     API_URL = "#{API_ORIGIN}/api/v1/users/me".freeze
 
     # Non-secret staging identifiers. The browser receives both anyway.
-    STAGING_PROJECT_ID = 'a6098321-36cd-458a-bbd8-12366f698aac'.freeze
+    STAGING_PROJECT_ID = 'a6098321-36cd-458a-bbd8-12366f698aac'
     TRUSTED_ORIGIN = 'https://secure.marfi.app'
 
     # Only existing MARFI identities may sign in through the pilot.
