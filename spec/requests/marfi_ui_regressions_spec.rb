@@ -55,7 +55,8 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(html.at_css('.marfi-app-header')).to be_present
     expect(html.at_css('.marfi-app-product')&.text).to include('Secure eSIGN')
     expect(html.at_css('.marfi-app-header')&.text).not_to include('DocuSeal OSS')
-    expect(html.at_css('.marfi-app-footer')&.text).to include('DocuSeal OSS')
+    expect(html.at_css('.marfi-app-footer')).to be_nil
+    expect(response.body).not_to include('Forked from')
     expect(response.body).not_to include('Secure eSign')
   end
 

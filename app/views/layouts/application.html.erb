@@ -65,9 +65,11 @@
           <div class="marfi-app-main">
             <%= yield %>
           </div>
-          <footer class="marfi-app-footer">
-            <span>Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a></span>
-          </footer>
+          <% unless signed_in? %>
+            <footer class="marfi-app-footer">
+              <span>Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a></span>
+            </footer>
+          <% end %>
         </div>
       <% else %>
         <%= yield %>
