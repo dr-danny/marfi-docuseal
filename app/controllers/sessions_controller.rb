@@ -2,6 +2,7 @@
 
 class SessionsController < Devise::SessionsController
   before_action :configure_permitted_parameters
+  before_action :allow_hexclave_browser_connect, only: :new
 
   around_action :with_browser_locale
 
@@ -36,6 +37,12 @@ class SessionsController < Devise::SessionsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_in, keys: [:otp_attempt])
+  end
+
+  def allow_hexclave_browser_connect
+    return unless HexclavePilot::Config.available?
+
+    HexclavePilot::Config.apply_browser_csp!(request)
   end
 
   def set_flash_message(key, kind, options = {})

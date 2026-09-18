@@ -8,24 +8,17 @@
     <div class="mt-8">
       <%= render 'hexclave_pilot/form' %>
     </div>
-    <div class="flex items-center gap-3 my-8 text-xs uppercase tracking-widest text-base-content/50" aria-hidden="true">
-      <span class="h-px flex-1 bg-base-content/15"></span>
-      <span>or use password</span>
-      <span class="h-px flex-1 bg-base-content/15"></span>
-    </div>
+    <details class="marfi-auth-password">
+      <summary>Use a password instead</summary>
   <% end %>
 
   <%= form_for(resource, as: resource_name, html: { class: 'space-y-6' }, data: { turbo: params[:redir].blank? }, url: session_path(resource_name)) do |f| %>
     <%= render 'hidden_fields' %>
     <div class="space-y-2" dir="auto">
-      <% if hexclave_available %>
-        <%= f.hidden_field :email, id: 'native-signin-email', autocomplete: 'email' %>
-      <% else %>
-        <div class="form-control">
-          <%= f.label :email, t(:email), class: 'label' %>
-          <%= f.email_field :email, autofocus: true, autocomplete: 'email', class: 'base-input' %>
-        </div>
-      <% end %>
+      <div class="form-control">
+        <%= f.label :email, t(:email), class: 'label' %>
+        <%= f.email_field :email, autofocus: !hexclave_available, autocomplete: 'email', class: 'base-input', id: ('native-signin-email' if hexclave_available) %>
+      </div>
       <div class="form-control">
         <%= f.label :password, t(:password), class: 'label' %>
         <%= f.password_field :password, autocomplete: 'current-password', class: 'base-input' %>
@@ -38,4 +31,8 @@
   <%= render 'omniauthable' %>
   <%= render 'extra_links' %>
   <%= render 'devise/shared/links' %>
+
+  <% if hexclave_available %>
+    </details>
+  <% end %>
 </div>

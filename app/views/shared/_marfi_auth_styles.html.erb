@@ -76,6 +76,18 @@
   .marfi-auth-card #flash > div { margin: 0; }
   .marfi-auth-card #flash > div > div { margin: 0; border-radius: 0; color: #f2eee7; background: #271a20; font-size: 13px; }
 
+  .marfi-auth-password { margin-top: 32px; }
+  .marfi-auth-password summary {
+    color: #999ba5;
+    font: 500 10px 'MARFI Auth Mono', monospace;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    list-style: none;
+  }
+  .marfi-auth-password summary::-webkit-details-marker { display: none; }
+  .marfi-auth-password[open] summary { margin-bottom: 24px; color: #f2eee7; }
+
   .marfi-auth-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px 30px; padding: 22px 0; border-top: 1px solid rgba(255, 255, 255, .14); color: #999ba5; font: 500 10px/1.7 'MARFI Auth Mono', monospace; }
   .marfi-auth-footer nav { display: flex; gap: 24px; }
   .marfi-auth-footer a { color: #b9bac1; text-decoration: underline; text-underline-offset: 3px; }

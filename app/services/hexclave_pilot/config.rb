@@ -14,6 +14,15 @@ module HexclavePilot
     API_ORIGIN = 'https://apigcp.hexclave.com'
     API_URL = "#{API_ORIGIN}/api/v1/users/me".freeze
 
+    # Live Hexclave JS 1.0.67 probes these hosts from the browser. Blocking any
+    # of them with connect-src 'self' makes OTP, GitHub and passkey fail closed.
+    BROWSER_CONNECT_ORIGINS = [
+      API_ORIGIN,
+      'https://api.hexclave.com',
+      'https://app.hexclave.com',
+      'https://1.1.1.1'
+    ].freeze
+
     # Non-secret staging identifiers. The browser receives both anyway.
     STAGING_PROJECT_ID = 'a6098321-36cd-458a-bbd8-12366f698aac'
     TRUSTED_ORIGIN = 'https://secure.marfi.app'
@@ -25,6 +34,10 @@ module HexclavePilot
 
     def self.enabled?
       ENABLED_VALUES.include?(ENV.fetch('HEXCLAVE_PILOT_ENABLED', '').downcase)
+    end
+
+    def self.apply_browser_csp!(request)
+      request.content_security_policy&.connect_src(:self, *BROWSER_CONNECT_ORIGINS)
     end
 
     def self.available?

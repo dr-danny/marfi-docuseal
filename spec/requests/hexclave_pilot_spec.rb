@@ -59,8 +59,12 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(html.at_css('#hexclave-pilot-send')).to be_present
     expect(html.at_css('#hexclave-pilot-github')).to be_present
     expect(html.at_css('#hexclave-pilot-passkey')).to be_present
-    expect(html.at_css('.marfi-auth-card input[name="user[password]"]')).to be_present
+    expect(html.at_css('.marfi-auth-password summary')&.text).to include('Use a password instead')
+    expect(html.at_css('.marfi-auth-card details input[name="user[password]"]')).to be_present
     expect(html.at_css('.marfi-auth-card form')['action']).to eq(user_session_path)
+    expect(response.headers['Content-Security-Policy']).to include(
+      "connect-src 'self' #{HexclavePilot::Config::BROWSER_CONNECT_ORIGINS.join(' ')}"
+    )
     expect(response.body).not_to include('canary-secret-server-key')
   end
 
@@ -90,11 +94,12 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(response.body).not_to include('signInWithCredential', 'resetPassword', 'sendForgotPasswordEmail')
   end
 
-  it 'hardens pilot response headers and CSP against the staging API origin only' do
+  it 'hardens pilot response headers and allows the Hexclave browser origins' do
     get hexclave_pilot_path
 
-    expect(response.headers['Content-Security-Policy']).to include("connect-src 'self' https://apigcp.hexclave.com")
-    expect(response.headers['Content-Security-Policy']).not_to include('https://api.hexclave.com')
+    expect(response.headers['Content-Security-Policy']).to include(
+      "connect-src 'self' #{HexclavePilot::Config::BROWSER_CONNECT_ORIGINS.join(' ')}"
+    )
     expect(response.headers['Cache-Control']).to include('no-store')
     expect(response.headers['Referrer-Policy']).to eq('no-referrer')
   end
@@ -180,6 +185,13 @@ RSpec.describe 'Hexclave pilot', type: :request do
 
   it 'filters pilot credential parameter names from logs' do
     filters = Rails.application.config.filter_parameters.grep(Regexp)
+    expect(filters.any? { |filter| filter.match?('access_token') }).to be(true)
+    expect(filters.any? { |filter| filter.match?('authorization') }).to be(true)
+    expect(filters.any? { |filter| filter.match?('nonce') }).to be(true)
+    expect(filters.any? { |filter| filter.match?('refresh_token') }).to be(true)
+  end
+end
+)
     expect(filters.any? { |filter| filter.match?('access_token') }).to be(true)
     expect(filters.any? { |filter| filter.match?('authorization') }).to be(true)
     expect(filters.any? { |filter| filter.match?('nonce') }).to be(true)
