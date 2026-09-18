@@ -22,9 +22,8 @@ class HexclavePilotController < ApplicationController
       return redirect_to root_path
     end
 
-    # Do not leak subject, email, account, MFA, or provider-token state. Native
-    # sign-in remains available at the ordinary Devise route.
-    render json: { error: 'Pilot sign-in was not accepted. Use native sign-in.' }, status: :unauthorized
+    # Do not leak subject, email, account, MFA, or provider-token state.
+    render json: { error: 'Sign-in was not accepted.' }, status: :unauthorized
   end
 
   private
@@ -36,7 +35,7 @@ class HexclavePilotController < ApplicationController
 
   def rate_limited
     response.headers['Retry-After'] = '60'
-    render json: { error: 'Too many pilot attempts. Use native sign-in or retry later.' }, status: :too_many_requests
+    render json: { error: 'Too many attempts. Retry later.' }, status: :too_many_requests
   end
 
   def set_pilot_headers

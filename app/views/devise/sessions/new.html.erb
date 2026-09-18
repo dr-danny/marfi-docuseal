@@ -8,31 +8,25 @@
     <div class="mt-8">
       <%= render 'hexclave_pilot/form' %>
     </div>
-    <details class="marfi-auth-password">
-      <summary>Use a password instead</summary>
-  <% end %>
-
-  <%= form_for(resource, as: resource_name, html: { class: 'space-y-6' }, data: { turbo: params[:redir].blank? }, url: session_path(resource_name)) do |f| %>
-    <%= render 'hidden_fields' %>
-    <div class="space-y-2" dir="auto">
-      <div class="form-control">
-        <%= f.label :email, t(:email), class: 'label' %>
-        <%= f.email_field :email, { autofocus: !hexclave_available, autocomplete: 'email', class: 'base-input' }.merge(hexclave_available ? { id: 'native-signin-email' } : {}) %>
+  <% else %>
+    <%= form_for(resource, as: resource_name, html: { class: 'space-y-6' }, data: { turbo: params[:redir].blank? }, url: session_path(resource_name)) do |f| %>
+      <%= render 'hidden_fields' %>
+      <div class="space-y-2" dir="auto">
+        <div class="form-control">
+          <%= f.label :email, t(:email), class: 'label' %>
+          <%= f.email_field :email, autofocus: true, autocomplete: 'email', class: 'base-input' %>
+        </div>
+        <div class="form-control">
+          <%= f.label :password, t(:password), class: 'label' %>
+          <%= f.password_field :password, autocomplete: 'current-password', class: 'base-input' %>
+        </div>
       </div>
       <div class="form-control">
-        <%= f.label :password, t(:password), class: 'label' %>
-        <%= f.password_field :password, autocomplete: 'current-password', class: 'base-input' %>
+        <%= f.button button_title(title: t(:sign_in), disabled_with: t(:signing_in)), class: 'base-button' %>
       </div>
-    </div>
-    <div class="form-control">
-      <%= f.button button_title(title: t(:sign_in), disabled_with: t(:signing_in)), class: 'base-button' %>
-    </div>
-  <% end %>
-  <%= render 'omniauthable' %>
-  <%= render 'extra_links' %>
-  <%= render 'devise/shared/links' %>
-
-  <% if hexclave_available %>
-    </details>
+    <% end %>
+    <%= render 'omniauthable' %>
+    <%= render 'extra_links' %>
+    <%= render 'devise/shared/links' %>
   <% end %>
 </div>

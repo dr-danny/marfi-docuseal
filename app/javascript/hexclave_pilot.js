@@ -80,7 +80,7 @@ if (root) {
       window.location.assign('/')
       return
     }
-    throw new Error('Pilot sign-in was not accepted. Use native sign-in.')
+    throw new Error('Sign-in was not accepted.')
   }
 
   const showMfaIfPending = (error) => {
@@ -95,7 +95,7 @@ if (root) {
   bindAsync('hexclave-pilot-send', async () => {
     const address = email.value.trim()
     syncNativeEmail()
-    if (!isAllowedEmail(address)) return setMessage(`Only existing @${allowedDomain} identities can use pilot sign-in.`)
+    if (!isAllowedEmail(address)) return setMessage(`Only existing @${allowedDomain} identities can sign in.`)
 
     setMessage('Sending code...')
     try {
@@ -106,22 +106,23 @@ if (root) {
       setMessage('Enter the six-character code from the email.')
       code.focus()
     } catch (error) {
-      setMessage(error?.humanReadableMessage || 'Could not send a pilot code.')
+      setMessage(error?.humanReadableMessage || error?.message || 'Could not send a code.')
     }
   })
 
   bindAsync('hexclave-pilot-verify', async () => {
-    const typedCode = code.value.trim().replace(/[^a-z0-9]/gi, '').toLowerCase()
+    const typedCode = code.value.trim().replace(/[^a-zA-Z0-9]/g, '')
     if (!nonce || typedCode.length !== 6) return setMessage('Enter the six-character code from the newest email.')
 
     setMessage('Verifying code...')
     try {
-      // Hexclave SDK 1.0.67 verifies the visible OTP plus sendMagicLinkEmail nonce.
+      // Hexclave verifies the visible OTP plus the nonce from sendMagicLinkEmail.
+      // Keep the emailed case; lowercasing invalidates mixed-case codes.
       const result = await app.signInWithMagicLink(`${typedCode}${nonce}`, { noRedirect: true })
       if (resultError(result)) throw result.error
       await exchange()
     } catch (error) {
-      if (!showMfaIfPending(error)) setMessage(error?.humanReadableMessage || 'Pilot code was not accepted.')
+      if (!showMfaIfPending(error)) setMessage(error?.humanReadableMessage || error?.message || 'That code was not accepted.')
     }
   })
 
@@ -198,5 +199,8 @@ if (root) {
         if (!showMfaIfPending(error)) setMessage(error?.humanReadableMessage || 'Magic link was not accepted.')
       }
     })
+  } else if (window.sessionStorage.getItem('hexclave_mfa_attempt_code')) {
+    hide(start); hide(codeStep); hide(linkStep); show(mfaStep)
+    setMessage('Enter the code from your authenticator.')
   }
 }

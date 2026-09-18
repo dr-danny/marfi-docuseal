@@ -59,9 +59,10 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(html.at_css('#hexclave-pilot-send')).to be_present
     expect(html.at_css('#hexclave-pilot-github')).to be_present
     expect(html.at_css('#hexclave-pilot-passkey')).to be_present
-    expect(html.at_css('.marfi-auth-password summary')&.text).to include('Use a password instead')
-    expect(html.at_css('.marfi-auth-card details input[name="user[password]"]')).to be_present
-    expect(html.at_css('.marfi-auth-card form')['action']).to eq(user_session_path)
+    expect(html.at_css('.marfi-auth-password')).to be_blank
+    expect(html.at_css('.marfi-auth-card input[name="user[password]"]')).to be_blank
+    expect(response.body).not_to include('Use a password instead')
+    expect(response.body).not_to include('Forgot your password')
     expect(response.headers['Content-Security-Policy']).to include(
       "connect-src 'self' #{HexclavePilot::Config::BROWSER_CONNECT_ORIGINS.join(' ')}"
     )
@@ -166,7 +167,7 @@ RSpec.describe 'Hexclave pilot', type: :request do
     post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" }
 
     expect(response).to have_http_status(:unauthorized)
-    expect(response.parsed_body).to eq({ 'error' => 'Pilot sign-in was not accepted. Use native sign-in.' })
+    expect(response.parsed_body).to eq({ 'error' => 'Sign-in was not accepted.' })
     expect(controller.current_user).to be_nil
   end
 
