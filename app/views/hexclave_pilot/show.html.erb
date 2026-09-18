@@ -2,15 +2,25 @@
 <div id="hexclave-pilot"
      data-project-id="<%= HexclavePilot::Config.project_id %>"
      data-publishable-client-key="<%= HexclavePilot::Config.publishable_client_key %>"
+     data-allowed-domain="<%= HexclavePilot::Config::ALLOWED_EMAIL_DOMAIN %>"
      data-exchange-url="<%= hexclave_pilot_session_path %>">
   <h1 class="text-3xl font-bold text-center mt-8">Pilot sign-in</h1>
-  <p class="text-center mt-3">Use your approved pilot identity. Native sign-in, recovery, and MFA remain available.</p>
+  <p class="text-center mt-3">Restricted to existing @marfi.io identities. Native sign-in, recovery, and MFA remain available.</p>
 
   <div class="max-w-lg mx-auto mt-8 space-y-4">
-    <div id="hexclave-pilot-start">
-      <label for="hexclave-pilot-email" class="label">Email</label>
-      <input id="hexclave-pilot-email" type="email" autocomplete="email" class="base-input w-full" required>
-      <button id="hexclave-pilot-send" type="button" class="base-button w-full mt-4">Email me a pilot code</button>
+    <div id="hexclave-pilot-start" class="space-y-4">
+      <div>
+        <label for="hexclave-pilot-email" class="label">Email</label>
+        <input id="hexclave-pilot-email" type="email" autocomplete="email" class="base-input w-full" required>
+        <button id="hexclave-pilot-send" type="button" class="base-button w-full mt-4">Email me a pilot code</button>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex-grow border-t border-base-300"></div>
+        <span class="text-sm">or</span>
+        <div class="flex-grow border-t border-base-300"></div>
+      </div>
+      <button id="hexclave-pilot-github" type="button" class="base-button w-full">Continue with GitHub</button>
+      <button id="hexclave-pilot-passkey" type="button" class="base-button w-full">Continue with a passkey</button>
     </div>
 
     <div id="hexclave-pilot-code" class="hidden">
@@ -26,7 +36,7 @@
     </div>
 
     <div id="hexclave-pilot-link" class="hidden">
-      <p>Confirm this magic link to continue.</p>
+      <p>Confirm this sign-in link to continue.</p>
       <button id="hexclave-pilot-link-verify" type="button" class="base-button w-full mt-4">Continue sign-in</button>
     </div>
 

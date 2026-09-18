@@ -10,7 +10,7 @@
           <%= ff.label :name, t('company_name'), class: 'label' %>
           <%= ff.text_field :name, required: true, class: 'base-input', dir: 'auto' %>
         </div>
-        <div class="grid md:grid-cols-2 gap-4">
+        <div>
           <div class="form-control">
             <%= ff.label :timezone, t('time_zone'), class: 'label' %>
             <%= ff.select :timezone, nil, {}, class: 'base-select' do %>
@@ -19,10 +19,6 @@
               <% items.unshift([tzinfo.to_s, current_account.timezone]) unless ActiveSupport::TimeZone.all.find { |e| e.tzinfo == tzinfo } %>
               <%= options_for_select(items, current_account.timezone) %>
             <% end %>
-          </div>
-          <div class="form-control">
-            <%= ff.label :locale, t('language'), class: 'label' %>
-            <%= ff.select :locale, options_for_select(AccountsController::LOCALE_OPTIONS.invert, current_account.locale), {}, class: 'base-select' %>
           </div>
         </div>
       <% end %>

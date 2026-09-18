@@ -42,7 +42,7 @@ class HexclavePilotController < ApplicationController
   def set_pilot_headers
     response.headers['Cache-Control'] = 'no-store'
     response.headers['Referrer-Policy'] = 'no-referrer'
-    request.content_security_policy&.connect_src(:self, 'https://api.hexclave.com')
+    request.content_security_policy&.connect_src(:self, HexclavePilot::Config::API_ORIGIN)
   end
 
   def require_available_pilot

@@ -5,8 +5,9 @@ const root = document.getElementById('hexclave-pilot')
 if (root) {
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content
   const fixedCallbackUrl = `${window.location.origin}/hexclave/pilot`
+  const allowedDomain = root.dataset.allowedDomain || 'marfi.io'
   const app = new HexclaveClientApp({
-    baseUrl: 'https://api.hexclave.com',
+    baseUrl: 'https://apigcp.hexclave.com',
     projectId: root.dataset.projectId,
     publishableClientKey: root.dataset.publishableClientKey,
     // The SDK type supports "memory". No access or refresh tokens persist in a
@@ -34,6 +35,13 @@ if (root) {
   const hide = (element) => element.classList.add('hidden')
   const setMessage = (text) => { message.textContent = text }
   const resultError = (result) => result?.status === 'error'
+
+  // Client-side convenience check only. The server re-enforces the exact
+  // @marfi.io domain on the verified provider identity and the bound user.
+  const isAllowedEmail = (address) => {
+    const at = address.lastIndexOf('@')
+    return at > 0 && address.slice(at + 1).toLowerCase() === allowedDomain
+  }
 
   const bindAsync = (id, handler) => {
     const button = document.getElementById(id)
@@ -76,7 +84,7 @@ if (root) {
 
   bindAsync('hexclave-pilot-send', async () => {
     const address = email.value.trim()
-    if (!address) return setMessage('Enter your approved email address.')
+    if (!isAllowedEmail(address)) return setMessage(`Only existing @${allowedDomain} identities can use pilot sign-in.`)
 
     setMessage('Sending code...')
     try {
@@ -106,6 +114,29 @@ if (root) {
     }
   })
 
+  bindAsync('hexclave-pilot-github', async () => {
+    setMessage('Redirecting to GitHub...')
+    try {
+      // GitHub is the only enabled OAuth provider in the staged project.
+      // Account creation is disabled there, so an unlinked identity cannot
+      // provision an account; the server also requires the explicit binding.
+      await app.signInWithOAuth('github', { returnTo: fixedCallbackUrl })
+    } catch (error) {
+      setMessage(error?.humanReadableMessage || 'Could not start GitHub sign-in.')
+    }
+  })
+
+  bindAsync('hexclave-pilot-passkey', async () => {
+    setMessage('Waiting for passkey...')
+    try {
+      const result = await app.signInWithPasskey()
+      if (resultError(result)) throw result.error
+      await exchange()
+    } catch (error) {
+      if (!showMfaIfPending(error)) setMessage(error?.humanReadableMessage || 'Passkey sign-in was not accepted.')
+    }
+  })
+
   bindAsync('hexclave-pilot-mfa-verify', async () => {
     const typedCode = mfaCode.value.trim().replace(/\D/g, '')
     const attempt = window.sessionStorage.getItem('hexclave_mfa_attempt_code')
@@ -122,8 +153,22 @@ if (root) {
     }
   })
 
-  const linkCode = new URLSearchParams(window.location.search).get('code')
-  if (linkCode) {
+  const query = new URLSearchParams(window.location.search)
+  const linkCode = query.get('code')
+  const oauthState = query.get('state')
+  if (linkCode && oauthState) {
+    // OAuth redirect return. Do not leave verifier material in the address bar
+    // or browser history.
+    window.history.replaceState({}, document.title, '/hexclave/pilot')
+    hide(start); hide(codeStep)
+    setMessage('Completing GitHub sign-in...')
+    app.callOAuthCallback().then(async (handled) => {
+      if (!handled) throw new Error('OAuth callback was not accepted.')
+      await exchange()
+    }).catch((error) => {
+      if (!showMfaIfPending(error)) setMessage(error?.humanReadableMessage || 'GitHub sign-in was not accepted.')
+    })
+  } else if (linkCode) {
     // Do not leave an email-link verifier in the address bar or browser history.
     window.history.replaceState({}, document.title, '/hexclave/pilot')
     hide(start); hide(codeStep); show(linkStep)

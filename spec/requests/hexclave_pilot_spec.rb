@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Hexclave pilot', type: :request do
   let(:token) { 'test-access-token' }
   let(:provider_subject) { 'provider-subject-1' }
-  let(:user) { create(:user, email: 'pilot@example.test') }
+  let(:user) { create(:user, email: 'pilot@marfi.io') }
 
   before do
     user
@@ -21,7 +21,6 @@ RSpec.describe 'Hexclave pilot', type: :request do
     ENV['HEXCLAVE_PILOT_ENABLED'] = 'true'
     ENV['HEXCLAVE_PILOT_PROJECT_ID'] = 'project-id'
     ENV['HEXCLAVE_PILOT_PUBLISHABLE_CLIENT_KEY'] = 'public-key'
-    ENV['HEXCLAVE_PILOT_SECRET_SERVER_KEY'] = 'secret-server-key'
     ENV['HEXCLAVE_PILOT_BINDINGS_JSON'] = { provider_subject => user.id }.to_json
     example.run
   ensure
@@ -48,14 +47,37 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(response.body).not_to include('Use pilot sign-in')
   end
 
-  it 'renders public configuration but never the server secret' do
+  it 'defaults to the staging project and never renders any server secret' do
+    ENV.delete('HEXCLAVE_PILOT_PROJECT_ID')
+    ENV['HEXCLAVE_PILOT_SECRET_SERVER_KEY'] = 'canary-secret-server-key'
+
     get hexclave_pilot_path
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('project-id', 'public-key')
-    expect(response.body).not_to include('secret-server-key')
-    expect(response.body).to include('hexclave-pilot-link-verify')
-    expect(response.headers['Content-Security-Policy']).to include("connect-src 'self' https://api.hexclave.com")
+    expect(response.body).to include(HexclavePilot::Config::STAGING_PROJECT_ID, 'public-key')
+    expect(response.body).not_to include('canary-secret-server-key')
+    expect(response.body).not_to include('HEXCLAVE_PILOT_SECRET_SERVER_KEY')
+  end
+
+  it 'renders the passwordless entry points and the domain restriction, with no password method' do
+    get hexclave_pilot_path
+
+    html = Nokogiri::HTML(response.body)
+    expect(html.at_css('#hexclave-pilot-send')).to be_present
+    expect(html.at_css('#hexclave-pilot-github')).to be_present
+    expect(html.at_css('#hexclave-pilot-passkey')).to be_present
+    expect(html.at_css('#hexclave-pilot-link-verify')).to be_present
+    expect(html.at_css('#hexclave-pilot')['data-allowed-domain']).to eq('marfi.io')
+    expect(html.text).to include('@marfi.io')
+    expect(html.css('#hexclave-pilot input[type="password"]')).to be_empty
+    expect(response.body).not_to include('signInWithCredential', 'resetPassword', 'sendForgotPasswordEmail')
+  end
+
+  it 'hardens pilot response headers and CSP against the staging API origin only' do
+    get hexclave_pilot_path
+
+    expect(response.headers['Content-Security-Policy']).to include("connect-src 'self' https://apigcp.hexclave.com")
+    expect(response.headers['Content-Security-Policy']).not_to include('https://api.hexclave.com')
     expect(response.headers['Cache-Control']).to include('no-store')
     expect(response.headers['Referrer-Policy']).to eq('no-referrer')
   end
@@ -98,6 +120,35 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(controller.current_user).to eq(user)
   ensure
     ActionController::Base.allow_forgery_protection = old
+  end
+
+  it 'fails closed to the native fallback without leaking which check failed' do
+    stub_request(:get, HexclavePilot::Config::API_URL)
+      .to_return(status: 200, body: {
+        id: 'unbound-subject',
+        primary_email: 'attacker-controlled@marfi.io',
+        primary_email_verified: true
+      }.to_json)
+
+    post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" }
+
+    expect(response).to have_http_status(:unauthorized)
+    expect(response.parsed_body).to eq({ 'error' => 'Pilot sign-in was not accepted. Use native sign-in.' })
+    expect(controller.current_user).to be_nil
+  end
+
+  it 'rejects a non-MARFI provider identity at the exchange boundary' do
+    stub_request(:get, HexclavePilot::Config::API_URL)
+      .to_return(status: 200, body: {
+        id: provider_subject,
+        primary_email: 'pilot@marfi.io.attacker.example',
+        primary_email_verified: true
+      }.to_json)
+
+    post hexclave_pilot_session_path, headers: { Authorization: "Bearer #{token}" }
+
+    expect(response).to have_http_status(:unauthorized)
+    expect(controller.current_user).to be_nil
   end
 
   it 'throttles repeated exchanges before another provider request' do
