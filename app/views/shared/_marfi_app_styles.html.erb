@@ -1,0 +1,101 @@
+<style>
+  @font-face {
+    font-family: 'MARFI Auth Syne';
+    font-style: normal;
+    font-weight: 500 700;
+    font-display: swap;
+    src: url('/fonts/syne-500-700-latin.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'MARFI Auth Mono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/dm-mono-500-latin.woff2') format('woff2');
+  }
+
+  .marfi-app {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: #f2eee7;
+    color: #08090d;
+    color-scheme: light;
+  }
+
+  .marfi-app-header {
+    background: #08090d;
+    border-bottom: 1px solid rgba(255, 255, 255, .14);
+    color: #f2eee7;
+  }
+
+  .marfi-app-header a { color: #f2eee7; }
+  .marfi-app-header a:hover { color: #ff5362; }
+  .marfi-app-header #account_settings_button {
+    color: #b9bac1;
+    font: 500 11px 'MARFI Auth Mono', monospace;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+  .marfi-app-header #account_settings_button:hover { color: #f2eee7; }
+
+  .marfi-app-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #f2eee7;
+    font: 700 17px 'MARFI Auth Syne', sans-serif;
+    letter-spacing: .18em;
+  }
+  .marfi-app-brand img { width: 36px; height: 36px; }
+  .marfi-app-product {
+    font: 500 11px 'MARFI Auth Mono', monospace;
+    letter-spacing: .12em;
+    text-transform: none;
+    color: #ff5362;
+  }
+
+  .marfi-app-avatar {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #de3c4b;
+    color: #f2eee7;
+    border-radius: 0;
+    font: 500 11px 'MARFI Auth Mono', monospace;
+    letter-spacing: .04em;
+  }
+
+  .marfi-app-main { flex: 1; }
+  .marfi-app h1 { font-family: 'MARFI Auth Syne', sans-serif; letter-spacing: -.03em; }
+
+  .marfi-app .white-button {
+    border-radius: 0;
+    border-color: #de3c4b;
+    background: #de3c4b;
+    color: #f2eee7;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    font: 500 11px 'MARFI Auth Mono', monospace;
+  }
+  .marfi-app .white-button:hover { background: transparent; color: #de3c4b; }
+
+  .marfi-app-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px 30px;
+    margin-top: auto;
+    padding: 22px clamp(16px, 4vw, 84px);
+    border-top: 1px solid rgba(8, 9, 13, .14);
+    color: #6f717a;
+    font: 500 10px/1.7 'MARFI Auth Mono', monospace;
+  }
+  .marfi-app-footer a { color: #6f717a; text-decoration: underline; text-underline-offset: 3px; }
+  .marfi-app-footer a:hover { color: #08090d; }
+</style>

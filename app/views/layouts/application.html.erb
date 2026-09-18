@@ -57,11 +57,21 @@
         </footer>
       </div>
     <% else %>
-      <%= render 'shared/navbar' unless landing_page %>
-      <% if flash.present? %><%= render 'shared/flash' unless landing_page %><% end %>
-      <div class="<%= landing_page ? '' : 'max-w-6xl mx-auto px-4 md:px-2 mb-8' %>">
+      <% unless landing_page %>
+        <%= render 'shared/marfi_app_styles' %>
+        <div class="marfi-app">
+          <%= render 'shared/navbar' %>
+          <% if flash.present? %><%= render 'shared/flash' %><% end %>
+          <div class="max-w-6xl mx-auto px-4 md:px-2 mb-8 marfi-app-main">
+            <%= yield %>
+          </div>
+          <footer class="marfi-app-footer">
+            <span>Forked from <a href="<%= Docuseal::GITHUB_URL %>" target="_blank" rel="noopener">DocuSeal OSS</a></span>
+          </footer>
+        </div>
+      <% else %>
         <%= yield %>
-      </div>
+      <% end %>
     <% end %>
     <%= render 'shared/body_scripts' %>
   </body>

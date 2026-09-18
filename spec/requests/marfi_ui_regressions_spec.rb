@@ -44,6 +44,21 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(html.at_css('select[name*="timezone"]')).to be_present
   end
 
+  it 'brands the signed-in portal chrome like MARFI Secure eSIGN' do
+    user = create(:user)
+    sign_in user
+
+    get root_path
+
+    html = Nokogiri::HTML(response.body)
+    expect(html.at_css('.marfi-app')).to be_present
+    expect(html.at_css('.marfi-app-header')).to be_present
+    expect(html.at_css('.marfi-app-product')&.text).to include('Secure eSIGN')
+    expect(html.at_css('.marfi-app-header')&.text).not_to include('DocuSeal OSS')
+    expect(html.at_css('.marfi-app-footer')&.text).to include('DocuSeal OSS')
+    expect(response.body).not_to include('Secure eSign')
+  end
+
   it 'keeps the AGPL corresponding-source notice in transactional email attribution' do
     html = ApplicationController.render(partial: 'shared/email_attribution')
 
