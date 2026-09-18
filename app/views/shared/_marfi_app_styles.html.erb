@@ -222,17 +222,9 @@
   }
   .marfi-app .white-button:hover { background: transparent; color: #de3c4b; }
 
-  .marfi-dropzone-form {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 380px;
-    margin-top: 0 !important;
-  }
-  .marfi-dropzone-form file-dropzone { flex: 1; display: flex; }
+  .marfi-dropzone-form { margin-top: 0 !important; }
   .marfi-dropzone-area {
-    flex: 1;
-    min-height: 380px;
+    height: 160px;
     border-radius: 0 !important;
     background: #fff;
     border-color: rgba(8, 9, 13, .16) !important;
@@ -257,7 +249,7 @@
 
   @media (max-width: 760px) {
     .marfi-app-header-inner, .marfi-app-main, .marfi-app-footer { width: calc(100% - 32px); }
-    .marfi-dropzone-area, .marfi-dropzone-form { min-height: 260px; }
+    .marfi-dropzone-area { height: 140px; }
     .marfi-app-header-search .input {
       width: 0 !important;
       max-width: none;
