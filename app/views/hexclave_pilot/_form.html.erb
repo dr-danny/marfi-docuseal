@@ -18,10 +18,14 @@
     <button id="hexclave-pilot-passkey" type="button" class="base-button w-full">Continue with a passkey</button>
   </div>
 
-  <div id="hexclave-pilot-code" class="hidden">
-    <label for="hexclave-pilot-otp" class="label">Email code</label>
-    <input id="hexclave-pilot-otp" type="text" inputmode="text" autocomplete="one-time-code" class="base-input w-full" maxlength="6">
-    <button id="hexclave-pilot-verify" type="button" class="base-button w-full mt-4">Verify code</button>
+  <div id="hexclave-pilot-code" class="hidden space-y-4">
+    <p id="hexclave-pilot-code-hint" class="text-sm">Enter the code we emailed you.</p>
+    <div>
+      <label for="hexclave-pilot-otp" class="label">Enter code</label>
+      <input id="hexclave-pilot-otp" type="text" inputmode="text" autocomplete="one-time-code" class="base-input w-full" maxlength="6" spellcheck="false">
+      <button id="hexclave-pilot-verify" type="button" class="base-button w-full mt-4">Sign in</button>
+    </div>
+    <button id="hexclave-pilot-resend" type="button" class="marfi-auth-resend" disabled>Send a new code in 3:00</button>
   </div>
 
   <div id="hexclave-pilot-mfa" class="hidden">

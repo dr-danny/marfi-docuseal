@@ -57,6 +57,10 @@ RSpec.describe 'Hexclave pilot', type: :request do
     expect(html.at_css('.marfi-auth-page')).to be_present
     expect(html.at_css('#hexclave-pilot-email')).to be_present
     expect(html.at_css('#hexclave-pilot-send')).to be_present
+    expect(html.at_css('#hexclave-pilot-otp')).to be_present
+    expect(html.at_css('#hexclave-pilot-resend')).to be_present
+    expect(html.at_css('label[for="hexclave-pilot-otp"]')&.text).to include('Enter code')
+    expect(html.at_css('#hexclave-pilot-resend')&.text).to include('Send a new code in 3:00')
     expect(html.at_css('#hexclave-pilot-github')).to be_present
     expect(html.at_css('#hexclave-pilot-passkey')).to be_present
     expect(html.at_css('.marfi-auth-password')).to be_blank

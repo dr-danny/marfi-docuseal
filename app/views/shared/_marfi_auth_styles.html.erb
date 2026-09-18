@@ -76,6 +76,22 @@
   .marfi-auth-card #flash > div { margin: 0; }
   .marfi-auth-card #flash > div > div { margin: 0; border-radius: 0; color: #f2eee7; background: #271a20; font-size: 13px; }
 
+  .marfi-auth-card .marfi-auth-resend {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #999ba5;
+    font: 500 10px 'MARFI Auth Mono', monospace;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .marfi-auth-card .marfi-auth-resend:disabled { cursor: default; opacity: 1; color: #6f717a; }
+  .marfi-auth-card .marfi-auth-resend:not(:disabled):hover { color: #f2eee7; }
+
   .marfi-auth-password { margin-top: 32px; }
   .marfi-auth-password summary {
     color: #999ba5;

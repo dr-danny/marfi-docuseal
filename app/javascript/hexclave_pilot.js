@@ -31,9 +31,14 @@ if (root) {
   const message = document.getElementById('hexclave-pilot-message')
   const start = document.getElementById('hexclave-pilot-start')
   const codeStep = document.getElementById('hexclave-pilot-code')
+  const codeHint = document.getElementById('hexclave-pilot-code-hint')
+  const resend = document.getElementById('hexclave-pilot-resend')
   const mfaStep = document.getElementById('hexclave-pilot-mfa')
   const linkStep = document.getElementById('hexclave-pilot-link')
   let nonce = ''
+  let resendTimer = null
+  let resendRemaining = 0
+  const RESEND_SECONDS = 180
 
   const syncNativeEmail = () => {
     if (nativeEmail) nativeEmail.value = email.value
@@ -92,21 +97,72 @@ if (root) {
     return true
   }
 
-  bindAsync('hexclave-pilot-send', async () => {
+  const formatCountdown = (seconds) => {
+    const minutes = Math.floor(seconds / 60)
+    const remainder = seconds % 60
+    return `${minutes}:${String(remainder).padStart(2, '0')}`
+  }
+
+  const stopResendTimer = () => {
+    if (resendTimer) window.clearInterval(resendTimer)
+    resendTimer = null
+  }
+
+  const startResendTimer = () => {
+    stopResendTimer()
+    resendRemaining = RESEND_SECONDS
+    resend.disabled = true
+    resend.textContent = `Send a new code in ${formatCountdown(resendRemaining)}`
+    resendTimer = window.setInterval(() => {
+      resendRemaining -= 1
+      if (resendRemaining <= 0) {
+        stopResendTimer()
+        resend.disabled = false
+        resend.textContent = 'Send a new code'
+        return
+      }
+      resend.textContent = `Send a new code in ${formatCountdown(resendRemaining)}`
+    }, 1000)
+  }
+
+  const sendCode = async () => {
     const address = email.value.trim()
     syncNativeEmail()
-    if (!isAllowedEmail(address)) return setMessage(`Only existing @${allowedDomain} identities can sign in.`)
+    if (!isAllowedEmail(address)) {
+      setMessage(`Only existing @${allowedDomain} identities can sign in.`)
+      return false
+    }
 
     setMessage('Sending code...')
+    const result = await app.sendMagicLinkEmail(address, { callbackUrl: fixedCallbackUrl })
+    if (resultError(result) || !result?.data?.nonce) throw result?.error || new Error('No verifier returned.')
+    nonce = result.data.nonce
+    hide(start); hide(mfaStep); hide(linkStep); show(codeStep)
+    if (codeHint) codeHint.textContent = `Enter the code we emailed to ${address}.`
+    setMessage('')
+    code.value = ''
+    startResendTimer()
+    code.focus()
+    return true
+  }
+
+  bindAsync('hexclave-pilot-send', async () => {
     try {
-      const result = await app.sendMagicLinkEmail(address, { callbackUrl: fixedCallbackUrl })
-      if (resultError(result) || !result?.data?.nonce) throw result?.error || new Error('No verifier returned.')
-      nonce = result.data.nonce
-      hide(start); show(codeStep)
-      setMessage('Enter the six-character code from the email.')
-      code.focus()
+      await sendCode()
     } catch (error) {
       setMessage(error?.humanReadableMessage || error?.message || 'Could not send a code.')
+    }
+  })
+
+  resend.addEventListener('click', async () => {
+    if (resend.disabled) return
+    resend.disabled = true
+    try {
+      await sendCode()
+    } catch (error) {
+      setMessage(error?.humanReadableMessage || error?.message || 'Could not send a code.')
+      resend.disabled = false
+      resend.textContent = 'Send a new code'
     }
   })
 
