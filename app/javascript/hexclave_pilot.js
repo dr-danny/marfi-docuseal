@@ -22,6 +22,7 @@ if (root) {
   })
 
   const email = document.getElementById('hexclave-pilot-email')
+  const nativeEmail = document.getElementById('native-signin-email')
   const code = document.getElementById('hexclave-pilot-otp')
   const mfaCode = document.getElementById('hexclave-pilot-mfa-code')
   const message = document.getElementById('hexclave-pilot-message')
@@ -30,6 +31,12 @@ if (root) {
   const mfaStep = document.getElementById('hexclave-pilot-mfa')
   const linkStep = document.getElementById('hexclave-pilot-link')
   let nonce = ''
+
+  const syncNativeEmail = () => {
+    if (nativeEmail) nativeEmail.value = email.value
+  }
+  email.addEventListener('input', syncNativeEmail)
+  syncNativeEmail()
 
   const show = (element) => element.classList.remove('hidden')
   const hide = (element) => element.classList.add('hidden')
@@ -84,6 +91,7 @@ if (root) {
 
   bindAsync('hexclave-pilot-send', async () => {
     const address = email.value.trim()
+    syncNativeEmail()
     if (!isAllowedEmail(address)) return setMessage(`Only existing @${allowedDomain} identities can use pilot sign-in.`)
 
     setMessage('Sending code...')
