@@ -235,7 +235,3 @@ Rails.application.routes.draw do
 
   ActiveSupport.run_load_hooks(:routes, self)
 end
-lename', to: 'embed_scripts#show', as: :embed_script
-
-  ActiveSupport.run_load_hooks(:routes, self)
-end
