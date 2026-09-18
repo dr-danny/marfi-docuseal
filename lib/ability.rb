@@ -19,15 +19,15 @@ class Ability
 
   def configure_viewer(user)
     scope = account_scope(user)
+    granted = scope.merge(template_accesses: { user_id: user.id })
+    added = scope.merge(submitters: { email: user.email })
 
-    can :index, Template
-    can :index, Submission
-    can :index, Submitter
-    can :read, Template, Abilities::DocumentVisibility.granted_templates(user)
+    can :read, Template, granted
     can :read, TemplateFolder, scope
-    can :read, TemplateSharing, template_id: TemplateAccess.where(user_id: user.id).select(:template_id)
-    can :read, Submission, Abilities::DocumentVisibility.visible_submissions(user)
-    can :read, Submitter, Abilities::DocumentVisibility.visible_submitters(user)
+    can :read, TemplateSharing, template: granted
+    can :read, Submission, added
+    can :read, Submission, granted
+    can :read, Submitter, email: user.email
     can :read, Account, id: user.account_id
   end
 
@@ -35,21 +35,24 @@ class Ability
     scope = account_scope(user)
     own = { author_id: user.id, account_id: user.account_id }
     own_submissions = { created_by_user_id: user.id, account_id: user.account_id }
+    granted = scope.merge(template_accesses: { user_id: user.id })
+    added = scope.merge(submitters: { email: user.email })
 
-    can :index, Template
-    can :index, Submission
-    can :index, Submitter
     can :create, Template, scope
     can %i[update destroy], Template, own
-    can :read, Template, Abilities::DocumentVisibility.visible_templates(user)
+    can :read, Template, own
+    can :read, Template, granted
     can :manage, TemplateFolder, scope
     can :manage, TemplateSharing, template: own
     can :create, Submission, scope
     can %i[update destroy], Submission, own_submissions
-    can :read, Submission, Abilities::DocumentVisibility.visible_submissions(user, include_own: true)
+    can :read, Submission, own_submissions
+    can :read, Submission, added
+    can :read, Submission, granted
     can :create, Submitter, scope
     can %i[update destroy], Submitter, submission: own_submissions
-    can :read, Submitter, Abilities::DocumentVisibility.visible_submitters(user, include_own: true)
+    can :read, Submitter, email: user.email
+    can :read, Submitter, submission: own_submissions
     can :read, Account, id: user.account_id
   end
 
