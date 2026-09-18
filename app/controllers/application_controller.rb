@@ -82,13 +82,11 @@ class ApplicationController < ActionController::Base
   end
 
   def marfi_dashboard_selected
-    if %w[submissions_dashboard submissions_archived].include?(controller_name)
-      'submissions'
-    elsif controller_name == 'dashboard' && cookies[:dashboard_view] == 'submissions'
-      'submissions'
-    else
-      'templates'
-    end
+    submissions_view =
+      %w[submissions_dashboard submissions_archived].include?(controller_name) ||
+      (controller_name == 'dashboard' && cookies[:dashboard_view] == 'submissions')
+
+    submissions_view ? 'submissions' : 'templates'
   end
 
   private
