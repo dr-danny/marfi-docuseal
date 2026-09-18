@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resource :invitation, only: %i[update] do
       get '' => :edit
     end
+    get 'handler/oauth-callback', to: 'sessions#new'
   end
 
   # Disabled-by-default Hexclave proof-of-concept. The controller returns 404
