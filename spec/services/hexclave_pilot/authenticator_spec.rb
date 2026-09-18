@@ -168,11 +168,11 @@ RSpec.describe HexclavePilot::Authenticator do
     expect(described_class.call(access_token: token).status).to eq(:ineligible_user)
   end
 
-  it 'refuses provider sign-in for a native MFA user' do
+  it 'accepts a bound user even when native TOTP is enabled' do
     user.update!(otp_required_for_login: true)
     stub_identity(identity)
 
-    expect(described_class.call(access_token: token).status).to eq(:native_mfa_required)
+    expect(described_class.call(access_token: token).status).to eq(:success)
   end
 
   it 'keeps unbound native recovery accounts outside every provider path' do

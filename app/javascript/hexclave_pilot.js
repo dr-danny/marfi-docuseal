@@ -77,11 +77,14 @@ if (root) {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'X-CSRF-Token': csrf,
-        Accept: 'application/json'
+        Accept: 'text/html'
       }
     })
     const destination = new URL(response.url, window.location.origin)
-    if (response.redirected && response.ok && destination.origin === window.location.origin && destination.pathname === '/') {
+    // Do not send Accept: application/json. Fetch would keep that header on the
+    // followed GET /, and the HTML dashboard returns 406, which looked like a
+    // failed sign-in after Hexclave already accepted the code.
+    if (destination.origin === window.location.origin && (response.ok || response.redirected) && !destination.pathname.includes('/hexclave/pilot')) {
       window.location.assign('/')
       return
     }

@@ -12,7 +12,7 @@ module HexclavePilot
   # access type. The secret server key is never requested, stored, or sent.
   class Authenticator
     Result = Struct.new(:status, :user)
-    PROVIDER_TIMEOUT_SECONDS = 3
+    PROVIDER_TIMEOUT_SECONDS = 10
     MAX_TOKEN_BYTES = 8192
     PROVIDER_REQUEST_MUTEX = Mutex.new
 
@@ -43,7 +43,6 @@ module HexclavePilot
       return Result.new(status: :outside_allowed_domain) unless Config.marfi_email?(user.email)
       return Result.new(status: :email_mismatch) unless secure_email_match?(user.email, identity[:email])
       return Result.new(status: :ineligible_user) unless user.active_for_authentication?
-      return Result.new(status: :native_mfa_required) if user.otp_required_for_login?
 
       Result.new(status: :success, user: user)
     end
@@ -53,23 +52,20 @@ module HexclavePilot
     attr_reader :access_token
 
     def provider_identity
-      acquired = PROVIDER_REQUEST_MUTEX.try_lock
-      return unless acquired
+      PROVIDER_REQUEST_MUTEX.synchronize do
+        response = provider_connection.get do |request|
+          request.headers['X-Hexclave-Access-Type'] = 'client'
+          request.headers['X-Hexclave-Project-Id'] = Config.project_id
+          request.headers['X-Hexclave-Publishable-Client-Key'] = Config.publishable_client_key
+          request.headers['X-Hexclave-Access-Token'] = access_token
+        end
+        return unless response.status == 200
 
-      response = provider_connection.get do |request|
-        request.headers['X-Hexclave-Access-Type'] = 'client'
-        request.headers['X-Hexclave-Project-Id'] = Config.project_id
-        request.headers['X-Hexclave-Publishable-Client-Key'] = Config.publishable_client_key
-        request.headers['X-Hexclave-Access-Token'] = access_token
+        normalize_identity(JSON.parse(response.body))
       end
-      return unless response.status == 200
-
-      normalize_identity(JSON.parse(response.body))
     rescue Faraday::Error, JSON::ParserError, TypeError
       # Fail closed. Tokens, headers and provider response bodies are never logged.
       nil
-    ensure
-      PROVIDER_REQUEST_MUTEX.unlock if acquired
     end
 
     def provider_connection
