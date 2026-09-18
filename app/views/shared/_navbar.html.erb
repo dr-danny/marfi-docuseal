@@ -1,6 +1,6 @@
 <%= render 'shared/navbar_warning' %>
 <header class="marfi-app-header">
-<div class="marfi-app-header-inner flex items-center justify-between">
+<div class="marfi-app-header-inner flex items-center justify-between gap-4">
   <div class="flex items-center space-x-4">
     <a href="<%= root_path %>" class="marfi-app-brand" aria-label="MARFI Secure eSIGN home">
       <%= render 'shared/title' %>
@@ -19,7 +19,27 @@
           <%= render 'shared/github_button' %>
         </span>
       <% else %>
-        <div class="flex items-center justify-center space-x-4 mr-1">
+        <div class="flex items-center justify-end gap-3 min-w-0">
+          <% if marfi_dashboard_search? %>
+            <div class="marfi-app-header-search">
+              <%= render 'shared/search_input' %>
+            </div>
+          <% end %>
+          <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
+            <span class="hidden sm:block">
+              <%= render 'templates/upload_button', folder_name: @template_folder&.full_name %>
+            </span>
+            <open-modal-mobile data-disabled="<%= !Docuseal.multitenant? %>" class="flex">
+              <%= link_to new_template_path({ folder_name: @template_folder&.full_name }.compact),
+                          class: 'white-button !border gap-2', data: { turbo_frame: :modal } do %>
+                <%= svg_icon('plus', class: 'w-5 h-5 stroke-2') %>
+                <span class="hidden md:block"><%= t('create') %></span>
+              <% end %>
+            </open-modal-mobile>
+          <% end %>
+          <% if marfi_dashboard_nav? %>
+            <%= render 'dashboard/toggle_view', selected: marfi_dashboard_selected %>
+          <% end %>
           <%= render 'shared/navbar_buttons' %>
           <%= link_to t('settings'), settings_profile_index_path, class: 'hidden md:inline-flex font-medium text-lg', id: 'account_settings_button' %>
         </div>

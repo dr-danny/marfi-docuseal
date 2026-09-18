@@ -19,7 +19,11 @@ class ApplicationController < ActionController::Base
                 :current_account,
                 :true_ability,
                 :form_link_host,
-                :svg_icon
+                :svg_icon,
+                :marfi_dashboard_nav?,
+                :marfi_dashboard_actions?,
+                :marfi_dashboard_search?,
+                :marfi_dashboard_selected
 
   impersonates :user, with: ->(uuid) { User.find_by(uuid:) }
 
@@ -59,6 +63,31 @@ class ApplicationController < ActionController::Base
       pagy(:countless, collection, **keyword_args)
     else
       pagy(collection, **keyword_args)
+    end
+  end
+
+  def marfi_dashboard_nav?
+    signed_in? &&
+      %w[dashboard templates_dashboard submissions_dashboard template_folders
+         templates_archived submissions_archived].include?(controller_name)
+  end
+
+  def marfi_dashboard_actions?
+    signed_in? &&
+      %w[dashboard templates_dashboard submissions_dashboard template_folders].include?(controller_name)
+  end
+
+  def marfi_dashboard_search?
+    marfi_dashboard_nav?
+  end
+
+  def marfi_dashboard_selected
+    if %w[submissions_dashboard submissions_archived].include?(controller_name)
+      'submissions'
+    elsif controller_name == 'dashboard' && cookies[:dashboard_view] == 'submissions'
+      'submissions'
+    else
+      'templates'
     end
   end
 

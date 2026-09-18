@@ -84,6 +84,41 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(response.body).not_to include(Docuseal::CHATGPT_URL)
   end
 
+  it 'puts dashboard search, upload, create, and workspace tabs in the navbar' do
+    user = create(:user)
+    sign_in user
+
+    get root_path
+
+    expect(response).to have_http_status(:ok)
+    html = Nokogiri::HTML(response.body)
+    header = html.at_css('.marfi-app-header')
+    expect(header).to be_present
+    expect(header.at_css('#search')).to be_present
+    expect(header.at_css('#templates_upload_button')).to be_present
+    expect(header.at_css('#templates_submissions_toggle')).to be_present
+    expect(header.text).to include('Templates')
+    expect(header.text).to include('Submissions')
+    expect(header.text).to include('Create')
+    expect(header.text).to include('Settings')
+    expect(html.at_css('dashboard-dropzone #templates_submissions_toggle')).to be_nil
+    expect(html.at_css('dashboard-dropzone #search')).to be_nil
+  end
+
+  it 'hides dashboard navbar actions on settings screens' do
+    user = create(:user)
+    sign_in user
+
+    get settings_profile_index_path
+
+    expect(response).to have_http_status(:ok)
+    header = Nokogiri::HTML(response.body).at_css('.marfi-app-header')
+    expect(header.at_css('#search')).to be_nil
+    expect(header.at_css('#templates_upload_button')).to be_nil
+    expect(header.at_css('#templates_submissions_toggle')).to be_nil
+    expect(header.text).to include('Settings')
+  end
+
   it 'keeps the AGPL corresponding-source notice in transactional email attribution' do
     html = ApplicationController.render(partial: 'shared/email_attribution')
 

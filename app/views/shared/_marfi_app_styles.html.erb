@@ -46,6 +46,41 @@
   }
   .marfi-app-header #account_settings_button:hover { color: #f2eee7; }
 
+  .marfi-app-nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .marfi-app-nav-link {
+    background: transparent;
+    border: 0;
+    color: #b9bac1;
+    font: 500 11px 'MARFI Auth Mono', monospace;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .marfi-app-nav-link:hover { color: #f2eee7; }
+  .marfi-app-nav-link.is-active { color: #ff5362; }
+
+  .marfi-app-header-search { min-width: 0; }
+  .marfi-app-header .input {
+    background: transparent;
+    color: #f2eee7;
+    border-color: rgba(242, 238, 231, .22);
+  }
+  .marfi-app-header .input::placeholder { color: #b9bac1; }
+  .marfi-app-header .btn-ghost { color: #f2eee7; }
+  .marfi-app-header .btn-ghost:hover { color: #ff5362; background: transparent; }
+  .marfi-app-header .white-button { min-height: 40px; padding: 0 14px; }
+  .marfi-app-header .white-button:hover {
+    background: transparent;
+    color: #ff5362;
+    border-color: #ff5362;
+  }
+
   .marfi-app-brand {
     display: inline-flex;
     align-items: center;

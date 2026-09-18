@@ -2,30 +2,9 @@
 <% is_show_tabs = (@pagy.count.nil? || @pagy.count >= 5) || params[:status].present? || filter_params.present? %>
 <% if Docuseal.demo? %><%= render 'shared/demo_alert' %><% end %>
 <div class="group/header flex justify-between items-center w-full mb-4">
-  <div class="flex items-center flex-grow min-w-0 max-md:group-has-[search-input:focus-within]/header:hidden <%= 'max-md:hidden' if params[:q].present? %>">
-    <div class="mr-2">
-      <%= render 'dashboard/toggle_view', selected: 'submissions' %>
-    </div>
-    <h1 class="text-2xl truncate md:text-3xl sm:text-4xl font-bold md:block <%= 'hidden' if params[:q].present? %>">
-      <%= t('submissions') %>
-    </h1>
-  </div>
-  <div class="flex space-x-2 max-md:has-[search-input:focus-within]:grow <%= 'max-md:grow' if params[:q].present? %>">
-    <% if params[:q].present? || @pagy.pages > 1 || filter_params.present? %>
-      <%= render 'shared/search_input' %>
-    <% end %>
-    <% if can?(:create, ::Template) %>
-      <span class="hidden sm:block">
-        <%= render 'templates/upload_button' %>
-      </span>
-      <open-modal-mobile data-disabled="<%= !Docuseal.multitenant? %>" class="flex">
-        <%= link_to new_template_path, class: 'white-button !border gap-2', data: { turbo_frame: :modal } do %>
-          <%= svg_icon('plus', class: 'w-6 h-6 stroke-2') %>
-          <span class="hidden md:block"><%= t('create') %></span>
-        <% end %>
-      </open-modal-mobile>
-    <% end %>
-  </div>
+  <h1 class="text-2xl truncate md:text-3xl sm:text-4xl font-bold">
+    <%= t('submissions') %>
+  </h1>
 </div>
 <% view_archived_html = capture do %>
   <% if can?(:manage, :countless) || current_account.submissions.where.not(archived_at: nil).exists? %>
