@@ -52,20 +52,23 @@ module HexclavePilot
     attr_reader :access_token
 
     def provider_identity
-      PROVIDER_REQUEST_MUTEX.synchronize do
-        response = provider_connection.get do |request|
-          request.headers['X-Hexclave-Access-Type'] = 'client'
-          request.headers['X-Hexclave-Project-Id'] = Config.project_id
-          request.headers['X-Hexclave-Publishable-Client-Key'] = Config.publishable_client_key
-          request.headers['X-Hexclave-Access-Token'] = access_token
-        end
-        return unless response.status == 200
+      acquired = PROVIDER_REQUEST_MUTEX.try_lock
+      return unless acquired
 
-        normalize_identity(JSON.parse(response.body))
+      response = provider_connection.get do |request|
+        request.headers['X-Hexclave-Access-Type'] = 'client'
+        request.headers['X-Hexclave-Project-Id'] = Config.project_id
+        request.headers['X-Hexclave-Publishable-Client-Key'] = Config.publishable_client_key
+        request.headers['X-Hexclave-Access-Token'] = access_token
       end
+      return unless response.status == 200
+
+      normalize_identity(JSON.parse(response.body))
     rescue Faraday::Error, JSON::ParserError, TypeError
       # Fail closed. Tokens, headers and provider response bodies are never logged.
       nil
+    ensure
+      PROVIDER_REQUEST_MUTEX.unlock if acquired
     end
 
     def provider_connection
