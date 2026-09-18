@@ -30,18 +30,19 @@ class Ability
 
   def configure_editor(user)
     scope = account_scope(user)
-    own_templates = Abilities::DocumentVisibility.editable_templates(user)
-    visible_templates = Abilities::DocumentVisibility.visible_templates(user)
+    own = { author_id: user.id, account_id: user.account_id }
+    own_submissions = { created_by_user_id: user.id, account_id: user.account_id }
 
     can :create, Template, scope
-    can %i[read update destroy], Template, own_templates
-    can :read, Template, visible_templates
+    can %i[update destroy], Template, own
+    can :read, Template, Abilities::DocumentVisibility.visible_templates(user)
     can :manage, TemplateFolder, scope
-    can :manage, TemplateSharing, template: { author_id: user.id, account_id: user.account_id }
+    can :manage, TemplateSharing, template: own
     can :create, Submission, scope
-    can :manage, Submission, created_by_user_id: user.id, account_id: user.account_id
+    can %i[update destroy], Submission, own_submissions
     can :read, Submission, Abilities::DocumentVisibility.visible_submissions(user, include_own: true)
-    can :manage, Submitter, submission: { created_by_user_id: user.id, account_id: user.account_id }
+    can :create, Submitter, scope
+    can %i[update destroy], Submitter, submission: own_submissions
     can :read, Submitter, Abilities::DocumentVisibility.visible_submitters(user, include_own: true)
     can :read, Account, id: user.account_id
   end
