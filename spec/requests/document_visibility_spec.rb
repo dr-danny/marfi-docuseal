@@ -8,17 +8,16 @@ RSpec.describe 'Document visibility', type: :request do
   let(:editor) { create(:user, account:, role: User::EDITOR_ROLE) }
   let(:colleague) { create(:user, account:, role: User::EDITOR_ROLE) }
 
-  before do
-    create(:template, account:, author: editor, folder:, name: 'Own NDA')
-    create(:template, account:, author: colleague, folder:, name: 'Payroll')
-  end
+  let(:own_template) { create(:template, account:, author: editor, folder:, name: 'Own NDA') }
+  let(:other_template) { create(:template, account:, author: colleague, folder:, name: 'Payroll') }
 
-  it 'hides another users templates from the editor dashboard' do
+  it 'forbids an editor from opening another users template' do
     sign_in editor
-    get root_path
 
+    get template_path(own_template)
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('Own NDA')
-    expect(response.body).not_to include('Payroll')
+
+    get template_path(other_template)
+    expect(response).to redirect_to(root_path)
   end
 end
