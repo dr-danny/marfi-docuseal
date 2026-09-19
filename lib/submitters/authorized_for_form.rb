@@ -46,7 +46,7 @@ module Submitters
     def pass_cross_channel_sms_2fa?(submitter, current_user, request)
       return false unless submitter
 
-      # Skip if disabled on this submission
+      # Skip if cross-channel 2FA is disabled on this submission
       return true if submitter.submission.cross_channel_2fa_enabled == false
 
       # Skip if already authenticated (internal staff or existing user)
@@ -61,9 +61,35 @@ module Submitters
       # Only handle email-invited signers needing SMS verification
       return true unless submitter.invitation_channel == 'email'
 
-      # Must verify via SMS
+      # Must verify via SMS (ignore template preference for cross-channel)
       return true if request.cookie_jar.encrypted[:sms_2fa_slug] == submitter.slug
       return true if submitter.sms_2fa_verified?
+
+      false
+    end
+
+    def pass_cross_channel_email_2fa?(submitter, request)
+      return false unless submitter
+
+      # Skip if cross-channel 2FA is disabled on this submission
+      return true if submitter.submission.cross_channel_2fa_enabled == false
+
+      # Skip if MARFI staff (@marfi.io)
+      return true if submitter.email.present? && submitter.email.downcase.end_with?('@marfi.io')
+
+      # If no invitation channel set, skip for now (backward compat)
+      return true if submitter.invitation_channel.blank?
+
+      # Only handle SMS-invited signers needing email verification
+      return true unless submitter.invitation_channel == 'sms'
+
+      # Must verify via email (ignore template preference for cross-channel)
+      # Use same logic as pass_email_2fa? but without the template preference check
+      return true if request.cookie_jar.encrypted[:email_2fa_slug] == submitter.slug
+
+      token = request.params[:two_factor_token].presence || request.headers['x-two-factor-token'].presence
+      return true if token.present? &&
+                     Submitter.signed_id_verifier.verified(token, purpose: :email_two_factor) == submitter.slug
 
       false
     end
