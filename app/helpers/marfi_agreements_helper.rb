@@ -81,15 +81,16 @@ module MarfiAgreementsHelper
   end
 
   def agreement_signable_submitter(submission)
-    return if current_user.blank? || submission.archived_at? || submission.expired?
-    return if submission.template&.archived_at?
+    return if current_user.blank?
+    return if submission.archived_at? || submission.template&.archived_at? || submission.expired?
 
-    user_email = current_user.email.to_s.strip.downcase
+    user_email = current_user.email.to_s
     agreement_submitters(submission).find do |submitter|
-      submitter.email.to_s.strip.downcase == user_email &&
-        submitter.completed_at.blank? &&
-        submitter.declined_at.blank? &&
-        !submitter.viewer?
+      next if submitter.declined_at?
+      next if submitter.completed_at?
+      next unless submitter.email.present?
+
+      submitter.email == user_email
     end
   end
 

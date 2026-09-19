@@ -7,6 +7,10 @@
 <% author = agreement_author(submission) %>
 <% access_users = agreement_access_users(submission) %>
 <% signable = agreement_signable_submitter(submission) %>
+<%# Fallback: same condition as templates/_submission Sign Now %>
+<% if signable.blank? && !submission.archived_at? && !template&.archived_at? && !submission.expired? %>
+  <% signable = submitters.find { |s| !s.declined_at? && !s.completed_at? && s.email.present? && s.email == current_user.email } %>
+<% end %>
 <tr class="marfi-agreements-row">
   <td class="marfi-agreements-cell is-agreement">
     <a href="<%= submission_path(submission) %>" class="marfi-agreements-title">
