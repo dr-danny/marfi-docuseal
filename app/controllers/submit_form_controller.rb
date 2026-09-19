@@ -17,8 +17,16 @@ class SubmitFormController < ApplicationController
   def show
     submission = @submitter.submission
 
+    # Cross-channel 2FA takes priority: if SMS-invited, require email 2FA; if email-invited, require SMS 2FA
+    case @submitter.invitation_channel
+    when 'sms'
+      return render :email_2fa unless Submitters::AuthorizedForForm.pass_email_2fa?(@submitter, request)
+    when 'email'
+      return render :sms_2fa unless Submitters::AuthorizedForForm.pass_cross_channel_sms_2fa?(@submitter, current_user, request)
+    end
+
+    # Fallback: use template preference for legacy email 2FA
     return render :email_2fa unless Submitters::AuthorizedForForm.pass_email_2fa?(@submitter, request)
-    return render :sms_2fa unless Submitters::AuthorizedForForm.pass_cross_channel_sms_2fa?(@submitter, current_user, request)
 
     if @submitter.completed_at? || submission.completed_at?
       return redirect_to submit_form_completed_path(@submitter.slug)
