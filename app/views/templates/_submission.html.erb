@@ -103,9 +103,9 @@
             <%= t('view') %>
           </a>
         </div>
-        <% if !submission.archived_at? && !template&.archived_at? && can?(:destroy, submission) %>
+        <% if !submission.completed_at? && !submission.archived_at? && !template&.archived_at? && can?(:destroy, submission) %>
           <span data-tip="<%= t('archive') %>" class="tooltip tooltip-top tooltip-no-touch">
-            <%= button_to button_title(title: nil, disabled_with: nil, icon: svg_icon('archive', class: 'w-6 h-6'), icon_disabled: svg_icon('loader', class: 'w-6 h-6 animate-spin')), submission_path(submission), class: 'btn btn-outline btn-sm w-full md:w-fit', form: { class: 'flex' }, title: t('archive'), method: :delete %>
+            <%= button_to button_title(title: nil, disabled_with: nil, icon: svg_icon('archive', class: 'w-6 h-6'), icon_disabled: svg_icon('loader', class: 'w-6 h-6 animate-spin')), submission_path(submission), class: 'btn btn-outline btn-sm w-full md:w-fit marfi-archive-action', form: { class: 'flex' }, title: t('archive'), method: :delete, data: { turbo_confirm: t('are_you_sure_') } %>
           </span>
         <% end %>
         <% if local_assigns[:archived] && can?(:destroy, submission) %>
@@ -212,9 +212,9 @@
             <%= t('view') %>
           </a>
         </div>
-        <% if !submission.archived_at? && !template&.archived_at? %>
+        <% if !submission.completed_at? && !submission.archived_at? && !template&.archived_at? && can?(:destroy, submission) %>
           <span data-tip="<%= t('archive') %>" class="tooltip tooltip-top tooltip-no-touch">
-            <%= button_to button_title(title: nil, disabled_with: nil, icon: svg_icon('archive', class: 'w-6 h-6'), icon_disabled: svg_icon('loader', class: 'w-6 h-6 animate-spin')), submission_path(submission), class: 'btn btn-outline btn-sm w-full md:w-fit', form: { class: 'flex' }, title: t('archive'), method: :delete %>
+            <%= button_to button_title(title: nil, disabled_with: nil, icon: svg_icon('archive', class: 'w-6 h-6'), icon_disabled: svg_icon('loader', class: 'w-6 h-6 animate-spin')), submission_path(submission), class: 'btn btn-outline btn-sm w-full md:w-fit marfi-archive-action', form: { class: 'flex' }, title: t('archive'), method: :delete, data: { turbo_confirm: t('are_you_sure_') } %>
           </span>
         <% end %>
         <% if local_assigns[:archived] && can?(:destroy, submission) %>

@@ -36,7 +36,7 @@
               <% if marfi_dashboard_nav? %>
                 <%= link_to marfi_archived_path,
                             id: 'templates_archived_button',
-                            class: "marfi-app-action#{' is-active' if marfi_archived?}",
+                            class: "marfi-app-action is-archive#{' is-active' if marfi_archived?}",
                             title: t('view_archived'),
                             aria: { label: t('view_archived') } do %>
                   <%= svg_icon('trash', class: 'w-5 h-5 stroke-2') %>

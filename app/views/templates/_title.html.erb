@@ -68,7 +68,7 @@
       <% if template.archived_at? %>
         <%= button_to button_title(title: t('restore'), disabled_with: t('restoring')[..-4], icon: svg_icon('rotate', class: 'w-6 h-6')), template_restore_index_path(template), class: 'btn btn-outline btn-sm w-full', form_class: 'flex-1' %>
       <% else %>
-        <%= button_to button_title(title: t('archive'), disabled_with: t('archiving')[..-4], title_class: 'inline', icon: svg_icon('archive', class: 'w-6 h-6')), template_path(template), class: 'btn btn-outline btn-sm w-full', form_class: 'flex-1', method: :delete %>
+        <%= button_to button_title(title: t('archive'), disabled_with: t('archiving')[..-4], title_class: 'inline', icon: svg_icon('archive', class: 'w-6 h-6')), template_path(template), class: 'btn btn-outline btn-sm w-full marfi-archive-action', form_class: 'flex-1', method: :delete, data: { turbo_confirm: t('are_you_sure_') } %>
       <% end %>
     <% end %>
     <% if can?(:create, current_account.templates.new(author: current_user)) %>

@@ -608,6 +608,7 @@ en: &en
   new_recipients_have_been_added: New recipients have been added.
   submission_has_been_removed: Submission has been removed.
   submission_has_been_archived: Submission has been archived.
+  completed_documents_cannot_be_archived: Completed documents cannot be archived.
   form_has_been_completed_already: Form has been completed already.
   form_has_been_archived: Form has been archived.
   form_has_been_expired: Form has been expired.

@@ -257,6 +257,17 @@ describe 'Submission API' do
         archived_at: submission.archived_at
       }.to_json))
     end
+
+    it 'does not archive a completed submission' do
+      submission = create(:submission, :with_submitters, template: templates[0], created_by_user: author,
+                                                         completed_at: Time.current)
+
+      delete "/api/submissions/#{submission.id}", headers: { 'x-auth-token': author.access_token.token }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body).to eq('error' => I18n.t('completed_documents_cannot_be_archived'))
+      expect(submission.reload.archived_at).to be_nil
+    end
   end
 
   describe 'PUT /api/submissions/:id' do
@@ -498,6 +509,11 @@ describe 'Submission API' do
         role: submitter.template.submitters.find { |s| s['uuid'] == submitter.uuid }['name'],
         embed_src: "#{Docuseal::DEFAULT_APP_URL}/s/#{submitter.slug}",
         values: Submitters::SerializeForWebhook.build_values_array(submitter)
+      }
+    end
+  end
+end
+ues_array(submitter)
       }
     end
   end

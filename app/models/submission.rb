@@ -65,6 +65,8 @@ class Submission < ApplicationRecord
 
   attribute :slug, :string, default: -> { SecureRandom.base58(14) }
 
+  validate :completed_documents_cannot_be_archived
+
   has_one_attached :audit_trail
   has_one_attached :combined_document
   has_one_attached :merged_document
@@ -186,5 +188,14 @@ class Submission < ApplicationRecord
     return if combined_document.blank?
 
     ActiveStorage::Blob.proxy_url(combined_document.blob, expires_at:)
+  end
+
+  private
+
+  def completed_documents_cannot_be_archived
+    return if new_record? || completed_at.blank?
+    return unless archived_at.present? && will_save_change_to_archived_at?
+
+    errors.add(:base, I18n.t('completed_documents_cannot_be_archived'))
   end
 end

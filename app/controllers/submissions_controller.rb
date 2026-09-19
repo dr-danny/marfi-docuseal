@@ -84,6 +84,9 @@ class SubmissionsController < ApplicationController
       end
 
     redirect_back(fallback_location: @submission.template_id ? template_path(@submission.template) : root_path, notice:)
+  rescue ActiveRecord::RecordInvalid
+    redirect_back(fallback_location: @submission.template_id ? template_path(@submission.template) : root_path,
+                  alert: @submission.errors.full_messages.first)
   end
 
   private

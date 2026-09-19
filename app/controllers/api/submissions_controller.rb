@@ -121,6 +121,8 @@ module Api
       SearchEntries.enqueue_reindex(@submission) if @submission.saved_change_to_name?
 
       render json: Submissions::SerializeForApi.call(@submission, nil, params, with_events: false)
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.record.errors.full_messages.first }, status: :unprocessable_content
     end
 
     def destroy
@@ -133,6 +135,8 @@ module Api
       end
 
       render json: @submission.as_json(only: %i[id archived_at])
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.record.errors.full_messages.first }, status: :unprocessable_content
     end
 
     private
