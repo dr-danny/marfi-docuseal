@@ -13,6 +13,7 @@
     <%= stylesheet_pack_tag 'application', media: 'all' %>
   </head>
   <body>
+    <%= render 'shared/marfi_app_styles' %>
     <% if flash.present? %><%= render 'shared/flash' %><% end %>
     <%= yield %>
     <turbo-frame id="modal"></turbo-frame>
