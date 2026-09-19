@@ -21,9 +21,9 @@ class SendEmailVerificationCodeJob
     code_str = code.to_s.rjust(6, '0')
     EmailVerificationCodes.generate(code_str, value, expires_in: 15.minutes)
 
-    # Send email with the code
+    # Send email with the code using the cross-channel mailer method
     I18n.with_locale(locale || submitter.account.locale) do
-      SubmitterMailer.with(code: code_str).cross_channel_email_verification(submitter).deliver_later
+      SubmitterMailer.cross_channel_email_verification(submitter, code_str).deliver_later
     end
 
     SubmissionEvent.create!(submitter_id: submitter.id,

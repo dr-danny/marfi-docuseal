@@ -11,7 +11,12 @@ class SubmitFormEmail2fasController < ApplicationController
   def create
     RateLimit.call("verify-2fa-code-#{@submitter.id}", limit: 2, ttl: 45.seconds, enabled: true)
 
-    value = [@submitter.email.downcase.strip, @submitter.slug].join(':')
+    # Cross-channel: use phone key for SMS-invited signers verifying via email
+    if @submitter.invitation_channel == 'sms'
+      value = [@submitter.phone.downcase.strip, @submitter.slug].join(':')
+    else
+      value = [@submitter.email.downcase.strip, @submitter.slug].join(':')
+    end
 
     if EmailVerificationCodes.verify(params[:one_time_code].to_s.gsub(/\D/, ''), value)
       SubmissionEvents.create_with_tracking_data(@submitter, 'email_verified', request, { email: @submitter.email })
@@ -35,7 +40,12 @@ class SubmitFormEmail2fasController < ApplicationController
 
     RateLimit.call("send-email-code-#{@submitter.id}", limit: 2, ttl: 45.seconds, enabled: true)
 
-    SendSubmitterVerificationEmailJob.perform_async('submitter_id' => @submitter.id, 'locale' => I18n.locale.to_s)
+    # Cross-channel: use unified phone-keyed code generator for SMS-invited signers
+    if @submitter.invitation_channel == 'sms'
+      SendEmailVerificationCodeJob.perform_async('submitter_id' => @submitter.id, 'locale' => I18n.locale.to_s)
+    else
+      SendSubmitterVerificationEmailJob.perform_async('submitter_id' => @submitter.id, 'locale' => I18n.locale.to_s)
+    end
 
     redir_params = params[:resend] ? { alert: I18n.t(:code_has_been_resent) } : {}
 

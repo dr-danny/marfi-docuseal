@@ -309,10 +309,10 @@ class SubmitterMailer < ApplicationMailer
     end
   end
 
-  def cross_channel_email_verification(submitter)
+  def cross_channel_email_verification(submitter, code)
     @current_account = submitter.account
     @submitter = submitter
-    @otp_code = params[:code]
+    @otp_code = code
 
     assign_message_metadata('cross_channel_email_verification', submitter)
 
