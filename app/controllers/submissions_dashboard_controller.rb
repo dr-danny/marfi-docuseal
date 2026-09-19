@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class SubmissionsDashboardController < ApplicationController
+  include MarfiAgreementsHelper
   load_and_authorize_resource :submission, parent: false
 
   def index
@@ -15,22 +16,17 @@ class SubmissionsDashboardController < ApplicationController
     @submissions = Submissions.search(current_user, @submissions, params[:q], search_template: true)
     @submissions = Submissions::Filter.call(@submissions, current_user, params)
 
-    @submissions =
-      if params[:status] == 'completed' || params[:completed_at_from].present? || params[:completed_at_to].present?
-        @submissions.order(completed_at: :desc)
-      else
-        @submissions.order(id: :desc)
-      end
+    @submissions = @submissions.select_for_list.preload(submitters: :start_form_submission_events)
 
-    @pagy, @submissions = pagy_auto(@submissions.select_for_list.preload(submitters: :start_form_submission_events))
-
-    template_scope = @submissions.all?(&:template_submitters) ? Template.select_for_list : nil
-
+    template_scope = Template.select_for_list
     ActiveRecord::Associations::Preloader.new(records: @submissions,
                                               associations: :template,
                                               scope: template_scope).call
 
     ActiveRecord::Associations::Preloader.new(records: @submissions.filter_map(&:template),
                                               associations: :author).call
+
+    sorted = sort_agreements_by_status_then_sent(@submissions.to_a)
+    @pagy, @submissions = pagy(:offset, sorted)
   end
 end

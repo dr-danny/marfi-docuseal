@@ -124,7 +124,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
 
     expect(response).to have_http_status(:ok)
     html = Nokogiri::HTML(response.body)
-    expect(html.css('.marfi-agreements-table th').map(&:text).map(&:strip)).to include('Access')
+    expect(html.css('.marfi-agreements-table th').map(&:text).map(&:strip)).to include('Access', 'Author', 'Date sent')
     expect(html.css('.marfi-access-avatar').size).to be >= 1
     expect(html.at_css(%(a.marfi-agreements-icon[aria-label="#{I18n.t('view')}"]))).to be_present
     expect(html.at_css(%(form[action="#{submission_path(incomplete)}"] button.marfi-archive-action))).to be_present

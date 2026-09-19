@@ -481,6 +481,7 @@ en: &en
   agreement: Agreement
   signer: Signer
   status: Status
+  date_sent: Date sent
   last_activity: Last activity
   access: Access
   actions: Actions

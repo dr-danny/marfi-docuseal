@@ -1,17 +1,10 @@
-<% status_badges = { 'awaiting' => 'is-awaiting', 'sent' => 'is-sent', 'completed' => 'is-completed', 'opened' => 'is-opened', 'declined' => 'is-declined', 'expired' => 'is-declined' } %>
 <% template = submission.template %>
 <% agreement_name = (submission.name.presence || template&.name).to_s %>
-<% submitters = (submission.template_submitters || template&.submitters || []).filter_map { |item| submission.submitters.find { |e| e.uuid == item['uuid'] } } %>
-<% submitters = submission.submitters.to_a if submitters.blank? %>
-<% latest = submitters.select(&:completed_at?).max_by(&:completed_at) || submitters.max_by { |s| s.status_event_at || s.created_at } %>
-<% row_status = if submission.expired? && !submission.completed_at?
-                  'expired'
-                elsif submission.completed_at?
-                  'completed'
-                else
-                  (latest&.status || 'awaiting')
-                end %>
-<% activity_at = latest&.status_event_at || submission.completed_at || submission.created_at %>
+<% submitters = agreement_submitters(submission) %>
+<% row_status = agreement_row_status(submission) %>
+<% activity_at = agreement_last_activity(submission) %>
+<% sent_at = agreement_date_sent(submission) %>
+<% author = agreement_author(submission) %>
 <% access_users = agreement_access_users(submission) %>
 <tr class="marfi-agreements-row">
   <td class="marfi-agreements-cell is-agreement">
@@ -27,13 +20,17 @@
       <span class="marfi-agreements-muted">—</span>
     <% else %>
       <div class="marfi-agreements-signers">
-        <% submitters.first(3).each do |submitter| %>
+        <% submitters.each do |submitter| %>
           <span><%= submitter.name.presence || submitter.email.presence || submitter.phone %></span>
         <% end %>
-        <% if submitters.size > 3 %>
-          <span class="marfi-agreements-muted">+<%= submitters.size - 3 %></span>
-        <% end %>
       </div>
+    <% end %>
+  </td>
+  <td class="marfi-agreements-cell is-author">
+    <% if author.present? %>
+      <span><%= author.full_name.presence || author.email %></span>
+    <% else %>
+      <span class="marfi-agreements-muted">—</span>
     <% end %>
   </td>
   <td class="marfi-agreements-cell is-access">
@@ -53,7 +50,10 @@
     <% end %>
   </td>
   <td class="marfi-agreements-cell is-status">
-    <span class="marfi-status-pill <%= status_badges[row_status] %>"><%= t(row_status) %></span>
+    <span class="marfi-status-pill <%= MarfiAgreementsHelper::STATUS_BADGES[row_status] %>"><%= t(row_status) %></span>
+  </td>
+  <td class="marfi-agreements-cell is-sent">
+    <%= l(sent_at.in_time_zone(current_account.timezone), format: :short, locale: current_account.locale) %>
   </td>
   <td class="marfi-agreements-cell is-activity">
     <%= l(activity_at.in_time_zone(current_account.timezone), format: :short, locale: current_account.locale) %>
