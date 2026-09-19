@@ -7,28 +7,22 @@
   </h1>
 </div>
 <% if is_show_tabs %>
-  <div class="flex items-center flex-col md:flex-row md:flex-wrap gap-2 mb-4">
-    <div class="hidden md:flex md:items-end gap-2 md:w-fit">
-      <a href="<%= url_for(params: request.query_parameters.except('status')) %>" class="<%= params[:status].blank? ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-600">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('list', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('all') %></span>
-        </div>
+  <div class="marfi-agreements-toolbar">
+    <div class="marfi-status-tabs" role="tablist" aria-label="<%= t('status') %>">
+      <a href="<%= url_for(params: request.query_parameters.except('status')) %>" role="tab" aria-selected="<%= params[:status].blank? %>" class="marfi-status-tab <%= 'is-active' if params[:status].blank? %>">
+        <%= svg_icon('list', class: 'w-4 h-4') %>
+        <span><%= t('all') %></span>
       </a>
-      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'pending')) %>" class="<%= params[:status] == 'pending' ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-600">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('clock', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('pending') %></span>
-        </div>
+      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'pending')) %>" role="tab" aria-selected="<%= params[:status] == 'pending' %>" class="marfi-status-tab <%= 'is-active' if params[:status] == 'pending' %>">
+        <%= svg_icon('clock', class: 'w-4 h-4') %>
+        <span><%= t('pending') %></span>
       </a>
-      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'completed')) %>" class="<%= params[:status] == 'completed' ? 'border-neutral-700' : 'border-neutral-300' %> flex h-10 px-2 py-1 text-lg items-center justify-between border text-center text-neutral font-semibold rounded-xl w-full md:w-48 hover:border-neutral-600">
-        <div class="flex items-center space-x-1">
-          <%= svg_icon('circle_check', class: 'w-5 h-5') %>
-          <span class="font-normal"><%= t('completed') %></span>
-        </div>
+      <a href="<%= url_for(params: request.query_parameters.merge('status' => 'completed')) %>" role="tab" aria-selected="<%= params[:status] == 'completed' %>" class="marfi-status-tab <%= 'is-active' if params[:status] == 'completed' %>">
+        <%= svg_icon('circle_check', class: 'w-4 h-4') %>
+        <span><%= t('completed') %></span>
       </a>
     </div>
-    <div class="flex items-center md:items-end gap-2 w-full md:w-fit">
+    <div class="marfi-agreements-filters">
       <%= render 'submissions_filters/applied_filters', filter_params:, with_status: true %>
       <%= render 'submissions_filters/filter_button', filter_params: %>
       <%= render 'submissions_filters/actions', filter_params: %>

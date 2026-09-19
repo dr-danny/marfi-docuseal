@@ -487,6 +487,7 @@ en: &en
   document_templates_html: <span class="hidden lg:inline">Document</span> Templates
   archived: Archived
   search: Search
+  filter: Filter
   submissions_not_found: Live Agreements not Found
   create: Create
   view_archived: View Archived
