@@ -803,6 +803,27 @@
   }
   .marfi-modal a.link:hover { color: #c92f3d !important; text-decoration: underline; }
 
+  /* Force large modal chrome over daisyUI utilities */
+  .marfi-modal.marfi-modal-large .marfi-modal-panel,
+  .marfi-modal.marfi-modal-large .marfi-modal-panel.bg-base-100 {
+    background: #fffaf3 !important;
+    color: #08090d !important;
+    border: 1px solid rgba(8, 9, 13, .12) !important;
+    box-shadow: 0 24px 60px rgba(8, 9, 13, .28) !important;
+  }
+  .marfi-modal.marfi-modal-large .marfi-modal-header,
+  .marfi-modal.marfi-modal-large .marfi-modal-header.bg-base-100 {
+    background: #08090d !important;
+    color: #f2eee7 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .12) !important;
+  }
+  .marfi-modal.marfi-modal-large .marfi-modal-title {
+    color: #f2eee7 !important;
+  }
+  .marfi-modal.marfi-modal-large .marfi-modal-close {
+    color: #f2eee7 !important;
+  }
+
   /* Document History / event log */
   .marfi-modal-large .border-s,
   .marfi-modal-large ol.relative {
