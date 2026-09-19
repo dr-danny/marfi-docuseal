@@ -6,6 +6,7 @@
 <% sent_at = agreement_date_sent(submission) %>
 <% author = agreement_author(submission) %>
 <% access_users = agreement_access_users(submission) %>
+<% signable = agreement_signable_submitter(submission) %>
 <tr class="marfi-agreements-row">
   <td class="marfi-agreements-cell is-agreement">
     <a href="<%= submission_path(submission) %>" class="marfi-agreements-title">

@@ -336,9 +336,9 @@
     outline: none;
   }
   .marfi-status-tab.is-active {
-    color: #08090d;
-    background: #f2eee7;
-    border-color: #f2eee7;
+    color: #fff;
+    background: #de3c4b;
+    border-color: #de3c4b;
   }
   .marfi-agreements-filters {
     display: flex;
@@ -363,6 +363,29 @@
   .marfi-agreements-filters > div.flex.h-10:hover {
     border-color: #de3c4b !important;
     color: #de3c4b;
+  }
+  .marfi-agreements-filters .marfi-filter-trigger.is-active,
+  .marfi-agreements-filters > .dropdown > label.is-active,
+  .marfi-agreements-filters > div.flex.h-10.border-neutral-700 {
+    background: #de3c4b !important;
+    border-color: #de3c4b !important;
+    color: #fff !important;
+  }
+  .marfi-agreements-filters .marfi-filter-trigger.is-active:hover,
+  .marfi-agreements-filters > .dropdown > label.is-active:hover,
+  .marfi-agreements-filters > div.flex.h-10.border-neutral-700:hover {
+    background: #c92f3d !important;
+    border-color: #c92f3d !important;
+    color: #fff !important;
+  }
+  .marfi-agreements-icon.is-sign {
+    color: #de3c4b;
+  }
+  .marfi-agreements-icon.is-sign:hover,
+  .marfi-agreements-icon.is-sign:focus-visible {
+    color: #fff;
+    background: #de3c4b;
+    border-color: #de3c4b;
   }
   .marfi-agreements-filters .dropdown-content {
     border-radius: 12px;

@@ -80,6 +80,17 @@ module MarfiAgreementsHelper
     submission.created_by_user || submission.template&.author
   end
 
+  def agreement_signable_submitter(submission)
+    return if current_user.blank? || submission.archived_at? || submission.expired?
+    return if submission.template&.archived_at?
+
+    agreement_submitters(submission).find do |submitter|
+      submitter.email.to_s.casecmp?(current_user.email.to_s) &&
+        submitter.completed_at.blank? &&
+        submitter.declined_at.blank?
+    end
+  end
+
   def sort_agreements_by_status_then_sent(submissions)
     submissions.sort_by do |submission|
       status = agreement_row_status(submission)

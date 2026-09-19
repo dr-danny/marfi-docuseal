@@ -117,6 +117,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
     user = create(:user, first_name: 'Danny', last_name: 'Mehditash')
     template = create(:template, account: user.account, author: user)
     incomplete = create(:submission, :with_submitters, template:, created_by_user: user)
+    incomplete.submitters.first.update!(email: user.email, completed_at: nil, declined_at: nil)
     completed = create(:submission, :with_submitters, template:, created_by_user: user, completed_at: Time.current)
     sign_in user
 
@@ -127,6 +128,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(html.css('.marfi-agreements-table th').map(&:text).map(&:strip)).to include('Access', 'Author', 'Date sent')
     expect(html.css('.marfi-access-avatar').size).to be >= 1
     expect(html.at_css(%(a.marfi-agreements-icon[aria-label="#{I18n.t('view')}"]))).to be_present
+    expect(html.at_css(%(a.marfi-agreements-icon.is-sign[aria-label="#{I18n.t('sign_now')}"]))).to be_present
     expect(html.at_css(%(form[action="#{submission_path(incomplete)}"] button.marfi-archive-action))).to be_present
     expect(html.at_css(%(form[action="#{submission_path(completed)}"] button.marfi-archive-action))).to be_nil
     expect(html.text).not_to match(/\bVIEW\b/)
