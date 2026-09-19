@@ -23,7 +23,9 @@ class ApplicationController < ActionController::Base
                 :marfi_dashboard_nav?,
                 :marfi_dashboard_actions?,
                 :marfi_dashboard_search?,
-                :marfi_dashboard_selected
+                :marfi_dashboard_selected,
+                :marfi_archived?,
+                :marfi_archived_path
 
   impersonates :user, with: ->(uuid) { User.find_by(uuid:) }
 
