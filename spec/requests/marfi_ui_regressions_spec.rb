@@ -112,6 +112,27 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(html.at_css('dashboard-dropzone #search')).to be_nil
   end
 
+  
+  it 'shows icon actions and access avatars on Live Agreements' do
+    user = create(:user, first_name: 'Danny', last_name: 'Mehditash')
+    template = create(:template, account: user.account, author: user)
+    incomplete = create(:submission, :with_submitters, template:, created_by_user: user)
+    completed = create(:submission, :with_submitters, template:, created_by_user: user, completed_at: Time.current)
+    sign_in user
+
+    get sent_path
+
+    expect(response).to have_http_status(:ok)
+    html = Nokogiri::HTML(response.body)
+    expect(html.css('.marfi-agreements-table th').map(&:text).map(&:strip)).to include('Access')
+    expect(html.css('.marfi-access-avatar').size).to be >= 1
+    expect(html.at_css(%(a.marfi-agreements-icon[aria-label="#{I18n.t('view')}"]))).to be_present
+    expect(html.at_css(%(form[action="#{submission_path(incomplete)}"] button.marfi-archive-action))).to be_present
+    expect(html.at_css(%(form[action="#{submission_path(completed)}"] button.marfi-archive-action))).to be_nil
+    expect(html.text).not_to match(/\bVIEW\b/)
+    expect(html.text).not_to match(/\bARCHIVE\b/)
+  end
+
   it 'uses real slugs for sent, archived, and new' do
     user = create(:user)
     sign_in user

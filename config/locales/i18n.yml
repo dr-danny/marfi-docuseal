@@ -482,6 +482,7 @@ en: &en
   signer: Signer
   status: Status
   last_activity: Last activity
+  access: Access
   actions: Actions
   document_templates_html: <span class="hidden lg:inline">Document</span> Templates
   archived: Archived
