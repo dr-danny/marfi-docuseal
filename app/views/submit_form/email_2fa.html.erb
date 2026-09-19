@@ -29,8 +29,10 @@
       <div>
         <%= t('the_sender_has_requested_a_two_factor_authentication_via_one_time_password_sent_to_your_email_html', email: TextUtils.mask_email(@submitter.email, 2)) %>
       </div>
+      <% is_cross_channel = @submitter.invitation_channel == 'sms' %>
       <% if params[:status] == 'sent' || params[:status] == 'error' %>
-        <%= form_for '', url: submit_form_email_2fa_path, method: :post, html: { class: 'space-y-4', id: 'code_form' } do |f| %>
+        <% verify_url = is_cross_channel ? submit_form_sms_2fa_path : submit_form_email_2fa_path %>
+        <%= form_for '', url: verify_url, method: :post, html: { class: 'space-y-4', id: 'code_form' } do |f| %>
           <div dir="auto" class="form-control !mt-0">
             <%= f.hidden_field :submitter_slug, value: @submitter.slug %>
             <%= f.text_field :one_time_code, required: true, inputmode: 'numeric', class: 'base-input text-center', placeholder: 'XXXXXX' %>
@@ -54,15 +56,17 @@
             <%= f.button button_title(title: t('submit')), class: 'base-button' %>
           </toggle-submit>
         <% end %>
-        <%= button_to t(:re_send_email), submit_form_email_2fa_path, params: { submitter_slug: @submitter.slug, resend: true }, method: :put, form: { id: 'resend_code_form', class: 'hidden' } %>
+        <% resend_url = is_cross_channel ? submit_form_sms_2fa_path : submit_form_email_2fa_path %>
+        <%= button_to t(:re_send_email), resend_url, params: { submitter_slug: @submitter.slug, resend: true }, method: :put, form: { id: 'resend_code_form', class: 'hidden' } %>
       <% else %>
         <% if params[:t] %>
           <fetch-form data-onload="true">
             <%= button_to '', api_submitter_email_clicks_path, params: { submitter_slug: @submitter.slug, t: params[:t] }, method: :post, class: 'hidden' %>
           </fetch-form>
         <% end %>
+        <% initial_send_url = is_cross_channel ? submit_form_sms_2fa_path : submit_form_email_2fa_path %>
         <toggle-submit dir="auto" class="form-control">
-          <%= button_to button_title(title: t('send_verification_code')), submit_form_email_2fa_path, params: { submitter_slug: @submitter.slug }, method: :put, class: 'base-button w-full' %>
+          <%= button_to button_title(title: t('send_verification_code')), initial_send_url, params: { submitter_slug: @submitter.slug }, method: :put, class: 'base-button w-full' %>
         </toggle-submit>
       <% end %>
     <% else %>

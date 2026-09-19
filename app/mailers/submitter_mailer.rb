@@ -308,4 +308,14 @@ class SubmitterMailer < ApplicationMailer
       @custom_domain = config.value
     end
   end
+
+  def cross_channel_email_verification(submitter)
+    @current_account = submitter.account
+    @submitter = submitter
+    @otp_code = params[:code]
+
+    assign_message_metadata('cross_channel_email_verification', submitter)
+
+    mail(to: submitter.email, subject: I18n.t('email_verification'))
+  end
 end
