@@ -86,6 +86,10 @@ en: &en
   partially_completed: Partially completed
   require_phone_2fa_to_open: Require phone 2FA to open
   the_sender_has_requested_a_two_factor_authentication_via_one_time_password_sent_to_your_html: The sender has requested two-factor authentication via a one-time password sent to your <b>%{phone}</b> phone number.
+  sms_verification_code_required_for_security_html: For security, please verify via the code sent to your <b>%{phone}</b> phone number.
+  sms_verification_code_is: 'Your verification code is: %{code}'
+  re_send_sms: Re-send SMS
+  please_contact_the_requester_to_specify_your_phone_for_two_factor_authentication: Please contact the requester to specify your phone number for two-factor authentication.
   send_verification_code: Send verification code
   code_has_been_resent: Code has been re-sent
   invalid_code: Invalid code

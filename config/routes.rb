@@ -167,6 +167,8 @@ Rails.application.routes.draw do
   resources :start_form_self, only: :update
   resource :submit_form_email_2fa, only: %i[create update]
   resources :start_form_email_2fa_send, only: :create
+  resource :submit_form_sms_2fa, only: %i[create update]
+  resources :start_form_sms_2fa_send, only: :create
 
   resources :submit_form, only: %i[], path: '' do
     get :success, on: :collection

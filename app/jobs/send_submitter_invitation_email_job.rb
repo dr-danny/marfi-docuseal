@@ -11,6 +11,7 @@ class SendSubmitterInvitationEmailJob
     return if submitter.submission.archived_at?
     return if submitter.submission.expired?
     return if submitter.template&.archived_at?
+    return if submitter.invitation_channel == 'email' # Already sent via email
     return if submitter.submission.source == 'invite' && !Accounts.can_send_emails?(submitter.account, on_events: true)
 
     unless Accounts.can_send_invitation_emails?(submitter.account)
@@ -32,7 +33,6 @@ class SendSubmitterInvitationEmailJob
 
     SubmissionEvent.create!(submitter:, event_type: 'send_email')
 
-    submitter.sent_at ||= Time.current
-    submitter.save!
+    submitter.update!(sent_at: submitter.sent_at || Time.current, invitation_channel: 'email')
   end
 end

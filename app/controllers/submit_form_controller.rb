@@ -11,6 +11,7 @@ class SubmitFormController < ApplicationController
   before_action :maybe_redirect_delegated, only: %i[show completed]
   before_action :maybe_render_locked_page, only: :show
   before_action :maybe_require_link_2fa, only: %i[show]
+  before_action :maybe_require_sms_2fa, only: %i[show]
 
   CONFIG_KEYS = [].freeze
 
@@ -18,6 +19,7 @@ class SubmitFormController < ApplicationController
     submission = @submitter.submission
 
     return render :email_2fa unless Submitters::AuthorizedForForm.pass_email_2fa?(@submitter, request)
+    return render :sms_2fa unless Submitters::AuthorizedForForm.pass_cross_channel_sms_2fa?(@submitter, current_user, request)
 
     if @submitter.completed_at? || submission.completed_at?
       return redirect_to submit_form_completed_path(@submitter.slug)

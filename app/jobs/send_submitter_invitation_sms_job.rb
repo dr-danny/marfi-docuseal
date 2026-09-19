@@ -12,6 +12,7 @@ class SendSubmitterInvitationSmsJob
     return if submitter.submission.expired?
     return if submitter.template&.archived_at?
     return if submitter.phone.blank?
+    return if submitter.invitation_channel == 'sms' # Already sent via SMS
     return if submitter.preferences['send_sms'] == false
     return unless MarfiSms.configured?(submitter.account)
 
@@ -28,8 +29,7 @@ class SendSubmitterInvitationSmsJob
       }.compact
     )
 
-    submitter.sent_at ||= Time.current
-    submitter.save!
+    submitter.update!(sent_at: submitter.sent_at || Time.current, invitation_channel: 'sms')
   rescue StandardError => e
     Rollbar.error(e) if defined?(Rollbar)
     Rails.logger.error("[SendSubmitterInvitationSmsJob] submitter=#{params['submitter_id']} error=#{e.message}")
