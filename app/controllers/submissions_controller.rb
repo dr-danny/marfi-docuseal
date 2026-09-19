@@ -28,7 +28,9 @@ class SubmissionsController < ApplicationController
       ).call
     end
 
-    render :show, layout: 'plain'
+    # Signed-in agreement detail uses the MARFI app chrome/navbar.
+    # Preview/public flows keep the plain layout via their own controllers.
+    render :show
   end
 
   def new
