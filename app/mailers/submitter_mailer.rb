@@ -316,6 +316,10 @@ class SubmitterMailer < ApplicationMailer
 
     assign_message_metadata('cross_channel_email_verification', submitter)
 
-    mail(to: submitter.email, subject: I18n.t('email_verification'))
+    mail(
+      to: submitter.email,
+      from: 'MARFI eSIGN <esign@secure.marfi.app>',
+      subject: I18n.t('email_verification')
+    )
   end
 end
