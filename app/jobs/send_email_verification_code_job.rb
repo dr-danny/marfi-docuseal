@@ -21,7 +21,7 @@ class SendEmailVerificationCodeJob
 
     # Send email with the TOTP code
     I18n.with_locale(locale || submitter.account.locale) do
-      SubmitterMailer.cross_channel_email_verification(submitter, code).deliver_later
+      SubmitterMailer.with(code:).cross_channel_email_verification(submitter).deliver_later
     end
 
     SubmissionEvent.create!(submitter_id: submitter.id,
