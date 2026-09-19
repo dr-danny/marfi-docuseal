@@ -84,10 +84,12 @@ module MarfiAgreementsHelper
     return if current_user.blank? || submission.archived_at? || submission.expired?
     return if submission.template&.archived_at?
 
+    user_email = current_user.email.to_s.strip.downcase
     agreement_submitters(submission).find do |submitter|
-      submitter.email.to_s.casecmp?(current_user.email.to_s) &&
+      submitter.email.to_s.strip.downcase == user_email &&
         submitter.completed_at.blank? &&
-        submitter.declined_at.blank?
+        submitter.declined_at.blank? &&
+        !submitter.viewer?
     end
   end
 
