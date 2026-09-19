@@ -32,6 +32,18 @@
               <% end %>
               <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
                 <%= render 'templates/upload_button', folder_name: @template_folder&.full_name %>
+              <% end %>
+              <% if marfi_dashboard_nav? %>
+                <%= link_to marfi_archived_path,
+                            id: 'templates_archived_button',
+                            class: "marfi-app-action#{' is-active' if marfi_archived?}",
+                            title: t('view_archived'),
+                            aria: { label: t('view_archived') } do %>
+                  <%= svg_icon('trash', class: 'w-5 h-5 stroke-2') %>
+                  <span class="marfi-app-action-label"><%= t('view_archived') %></span>
+                <% end %>
+              <% end %>
+              <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
                 <open-modal-mobile data-disabled="<%= !Docuseal.multitenant? %>" class="flex">
                   <%= link_to new_template_path({ folder_name: @template_folder&.full_name }.compact),
                               class: 'marfi-app-action is-create',

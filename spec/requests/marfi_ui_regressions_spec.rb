@@ -97,6 +97,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(header).to be_present
     expect(header.at_css('#search')).to be_present
     expect(header.at_css('#templates_upload_button')).to be_present
+    expect(header.at_css('#templates_archived_button')).to be_present
     expect(header.at_css('#templates_submissions_toggle')).to be_present
     expect(header.text).to include('Templates')
     expect(header.text).to include('Submissions')

@@ -89,6 +89,18 @@ class ApplicationController < ActionController::Base
     submissions_view ? 'submissions' : 'templates'
   end
 
+  def marfi_archived?
+    %w[templates_archived submissions_archived].include?(controller_name)
+  end
+
+  def marfi_archived_path
+    if marfi_dashboard_selected == 'submissions'
+      submissions_archived_index_path
+    else
+      templates_archived_index_path
+    end
+  end
+
   private
 
   def with_locale(&)

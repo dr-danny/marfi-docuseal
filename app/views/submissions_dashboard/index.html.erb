@@ -6,13 +6,6 @@
     <%= t('submissions') %>
   </h1>
 </div>
-<% view_archived_html = capture do %>
-  <% if can?(:manage, :countless) || current_account.submissions.where.not(archived_at: nil).exists? %>
-    <div>
-      <a href="<%= submissions_archived_index_path %>" class="link text-sm"><%= t('view_archived') %></a>
-    </div>
-  <% end %>
-<% end %>
 <% if is_show_tabs %>
   <div class="flex items-center flex-col md:flex-row md:flex-wrap gap-2 mb-4">
     <div class="hidden md:flex md:items-end gap-2 md:w-fit">
@@ -52,11 +45,7 @@
 <% end %>
 <% if @submissions.present? || (params[:q].blank? && filter_params.blank?) %>
   <% if @pagy.pages > 1 %>
-    <%= render 'shared/pagination', pagy: @pagy, items_name: 'submissions', left_additional_html: view_archived_html %>
-  <% else %>
-    <div class="mt-2">
-      <%= view_archived_html %>
-    </div>
+    <%= render 'shared/pagination', pagy: @pagy, items_name: 'submissions' %>
   <% end %>
 <% elsif params[:q].present? || filter_params.present? %>
   <div class="text-center">

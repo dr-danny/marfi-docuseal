@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: monkci-ubuntu-24.04-2
     steps:
       - name: Check out source
         uses: actions/checkout@v4

@@ -1,4 +1,3 @@
-<% has_archived = can?(:manage, :countless) || current_account.templates.where.not(archived_at: nil).exists? %>
 <% show_dropzone = params[:q].blank? && @pagy.pages == 1 && ((@template_folders.size < 10 && @templates.size.zero?) || (@template_folders.size < 7 && @templates.size < 4) || (@template_folders.size < 4 && @templates.size < 7)) %>
 <% if Docuseal.demo? %><%= render 'shared/demo_alert' %><% end %>
 <dashboard-dropzone>
@@ -16,13 +15,6 @@
       <%= t('document_templates_html') %>
     </h1>
   </div>
-  <% view_archived_html = capture do %>
-    <% if has_archived %>
-      <div>
-        <a href="<%= templates_archived_index_path %>" class="link text-sm"><%= t('view_archived') %></a>
-      </div>
-    <% end %>
-  <% end %>
   <% templates_order_select_html = capture do %>
     <% if params[:q].blank? && @pagy.pages > 1 && !can?(:manage, :countless) %>
       <%= render 'shared/templates_order_select', with_recently_used: @pagy.count.present? && @pagy.count < 10_000, selected_order: %>
@@ -76,11 +68,7 @@
 <% end %>
 <% if @templates.present? || @template_folders.present? || params[:q].blank? %>
   <% if @pagy.pages > 1 %>
-    <%= render 'shared/pagination', pagy: @pagy, items_name: @templates.present? ? 'templates' : 'template_folders', left_additional_html: view_archived_html, right_additional_html: templates_order_select_html %>
-  <% else %>
-    <div class="mt-2">
-      <%= view_archived_html %>
-    </div>
+    <%= render 'shared/pagination', pagy: @pagy, items_name: @templates.present? ? 'templates' : 'template_folders', right_additional_html: templates_order_select_html %>
   <% end %>
 <% elsif params[:q].present? %>
   <div class="text-center">
