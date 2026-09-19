@@ -1,8 +1,73 @@
+<% value = @encrypted_config.value.is_a?(Hash) ? @encrypted_config.value : {} %>
 <div class="flex flex-wrap space-y-4 md:flex-nowrap md:space-y-0">
   <%= render 'shared/settings_nav' %>
-  <div class="flex-grow max-w-xl mx-auto">
+  <div class="flex-grow max-w-xl mx-auto min-w-0">
     <h1 class="text-3xl md:text-4xl font-bold mb-4">SMS</h1>
-    <%= render 'placeholder' %>
+    <p class="text-sm text-base-content/70 mb-4">
+      Send signature invitations with MARFI Twilio. From number must be an approved Twilio sender.
+      Recipients can reply STOP to unsubscribe or HELP for help.
+    </p>
+
+    <%= form_for @encrypted_config, url: settings_sms_index_path, method: :post, html: { autocomplete: 'off', class: 'space-y-4' } do |f| %>
+      <%= f.fields_for :value do |ff| %>
+        <div class="form-control">
+          <%= ff.label :account_sid, 'Twilio Account SID', class: 'label' %>
+          <%= ff.text_field :account_sid, value: value['account_sid'], required: true, class: 'base-input', autocomplete: 'off' %>
+        </div>
+        <div class="form-control">
+          <%= ff.label :auth_token, 'Twilio Auth Token', class: 'label' %>
+          <%= ff.password_field :auth_token, class: 'base-input', autocomplete: 'new-password',
+                required: value['auth_token'].blank?,
+                placeholder: value['auth_token'].present? ? '*************' : '' %>
+        </div>
+        <div class="form-control">
+          <%= ff.label :from_phone, 'From phone', class: 'label' %>
+          <%= ff.telephone_field :from_phone, value: value['from_phone'], required: true, class: 'base-input',
+                pattern: '^\\+[0-9]+$', title: 'Use E.164 format, e.g. +18883085458', placeholder: '+18883085458' %>
+        </div>
+        <div class="form-control">
+          <%= ff.label :messaging_service_sid, "Messaging Service SID (#{t('optional')})", class: 'label' %>
+          <%= ff.text_field :messaging_service_sid, value: value['messaging_service_sid'], class: 'base-input', placeholder: 'MG...' %>
+        </div>
+        <div class="form-control">
+          <%= ff.label :status_callback_url, "Status callback URL (#{t('optional')})", class: 'label' %>
+          <%= ff.url_field :status_callback_url, value: value['status_callback_url'], class: 'base-input', placeholder: 'https://...' %>
+        </div>
+        <div class="form-control">
+          <%= ff.label :default_body, 'Default invitation SMS', class: 'label' %>
+          <%= ff.text_area :default_body,
+                value: value['default_body'].presence || MarfiSms.default_invitation_body,
+                rows: 6,
+                class: 'base-input font-mono text-sm',
+                dir: 'auto' %>
+          <div class="label">
+            <span class="label-text-alt">Variables: {submitter.name}, {template.name}, {submitter.link}, {account.name}</span>
+          </div>
+        </div>
+        <div class="form-control">
+          <label class="label cursor-pointer justify-start gap-3">
+            <%= ff.check_box :test_mode, { checked: value['test_mode'] == true, class: 'base-checkbox' }, '1', '0' %>
+            <span class="label-text">Test mode (log only, do not call Twilio)</span>
+          </label>
+        </div>
+      <% end %>
+      <div class="form-control pt-2">
+        <%= f.button button_title(title: t('save'), disabled_with: t('saving')), class: 'base-button' %>
+      </div>
+    <% end %>
+
+    <% if @encrypted_config.persisted? %>
+      <div class="flex justify-center pt-2">
+        <%= button_to 'Reset SMS settings', settings_sms_path(@encrypted_config), method: :delete, class: 'link', data: { turbo_confirm: t('are_you_sure_') } %>
+      </div>
+      <div class="mt-6 rounded-xl border border-base-300 bg-base-200/40 p-4 text-sm space-y-1">
+        <div><span class="font-medium">Provider:</span> Twilio</div>
+        <div><span class="font-medium">From:</span> <%= value['from_phone'] %></div>
+        <div><span class="font-medium">Account SID:</span> <%= value['account_sid'] %></div>
+        <div><span class="font-medium">Auth token:</span> <%= value['auth_token'].present? ? 'saved' : 'missing' %></div>
+        <div><span class="font-medium">Test mode:</span> <%= value['test_mode'] == true ? 'on' : 'off' %></div>
+      </div>
+    <% end %>
   </div>
   <div class="w-0 md:w-52"></div>
 </div>

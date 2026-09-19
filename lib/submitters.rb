@@ -166,14 +166,24 @@ module Submitters
 
   def send_signature_requests(submitters, delay_seconds: nil)
     submitters.each_with_index do |submitter, index|
-      next if submitter.email.blank?
       next if submitter.declined_at?
-      next if submitter.preferences['send_email'] == false
+
+      if submitter.email.present? && submitter.preferences['send_email'] != false
+        if delay_seconds
+          SendSubmitterInvitationEmailJob.perform_in((delay_seconds + index).seconds, 'submitter_id' => submitter.id)
+        else
+          SendSubmitterInvitationEmailJob.perform_async('submitter_id' => submitter.id)
+        end
+      end
+
+      next if submitter.phone.blank?
+      next if submitter.preferences['send_sms'] != true && submitter.preferences['send_sms'] != '1'
+      next unless MarfiSms.configured?(submitter.account)
 
       if delay_seconds
-        SendSubmitterInvitationEmailJob.perform_in((delay_seconds + index).seconds, 'submitter_id' => submitter.id)
+        SendSubmitterInvitationSmsJob.perform_in((delay_seconds + index).seconds, 'submitter_id' => submitter.id)
       else
-        SendSubmitterInvitationEmailJob.perform_async('submitter_id' => submitter.id)
+        SendSubmitterInvitationSmsJob.perform_async('submitter_id' => submitter.id)
       end
     end
   end

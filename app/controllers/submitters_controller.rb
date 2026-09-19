@@ -70,6 +70,10 @@ class SubmittersController < ApplicationController
 
     return if submitter.phone.blank?
     return unless params[:send_sms] == '1'
+    return unless MarfiSms.configured?(submitter.account)
+
+    submitter.preferences['send_sms'] = true
+    submitter.save!
 
     SendSubmitterInvitationSmsJob.perform_async('submitter_id' => submitter.id)
   end

@@ -1,1 +1,22 @@
-<%# MARFI: hide DocuSeal Pro SMS upsell on OSS portal %>
+<% sms_ready = MarfiSms.configured?(current_account) %>
+<% if submitter.phone.present? && !submitter.completed_at? && !submitter.declined_at? && !@submission.archived_at? && !@submission.template&.archived_at? && !@submission.expired? && can?(:update, @submission) %>
+  <div class="mt-2 mb-1">
+    <% if sms_ready %>
+      <%= button_to (submitter.sent_at? ? 'Re-send SMS' : 'Send SMS'),
+                    submitter_path(submitter),
+                    method: :patch,
+                    params: {
+                      send_sms: '1',
+                      submitter: {
+                        name: submitter.name,
+                        email: submitter.email,
+                        phone: submitter.phone
+                      }
+                    },
+                    class: 'btn btn-sm btn-primary w-full',
+                    form: { data: { turbo_confirm: 'Send this agreement invitation by SMS via Twilio?' } } %>
+    <% else %>
+      <%= link_to 'Configure Twilio SMS', settings_sms_index_path, class: 'btn btn-sm btn-outline w-full', data: { turbo: false } %>
+    <% end %>
+  </div>
+<% end %>

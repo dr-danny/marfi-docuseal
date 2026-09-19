@@ -1,1 +1,21 @@
-<%# MARFI: hide DocuSeal Pro SMS upsell on OSS portal %>
+<% sms_ready = MarfiSms.configured?(current_account) %>
+<div class="form-control mt-3">
+  <% if sms_ready %>
+    <label class="label cursor-pointer justify-start gap-3 py-0">
+      <%= check_box_tag :send_sms, '1', local_assigns[:checked] != false, class: 'base-checkbox', id: 'send_sms' %>
+      <span class="label-text">
+        <%= local_assigns[:resend_sms] ? 'Re-send via SMS (Twilio)' : 'Send via SMS (Twilio)' %>
+      </span>
+    </label>
+    <div class="label pt-1">
+      <span class="label-text-alt text-base-content/60">
+        Uses MARFI Twilio From <%= MarfiSms.configs_for(current_account).to_h['from_phone'] %>. Recipient phone required. Reply STOP to unsubscribe.
+      </span>
+    </div>
+  <% else %>
+    <div class="rounded-xl border border-base-300 bg-base-200/50 px-3 py-2 text-sm">
+      SMS is available after Twilio is saved in
+      <%= link_to 'Settings → SMS', settings_sms_index_path, class: 'link font-medium', data: { turbo: false } %>.
+    </div>
+  <% end %>
+</div>
