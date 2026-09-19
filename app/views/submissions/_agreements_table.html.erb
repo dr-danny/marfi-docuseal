@@ -1,0 +1,16 @@
+<div class="marfi-agreements-shell">
+  <table class="marfi-agreements-table">
+    <thead>
+      <tr>
+        <th scope="col"><%= t('agreement') %></th>
+        <th scope="col"><%= t('signer') %></th>
+        <th scope="col"><%= t('status') %></th>
+        <th scope="col"><%= t('last_activity') %></th>
+        <th scope="col"><%= t('actions') %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render partial: 'submissions/table_row', collection: submissions, as: :submission, locals: local_assigns.slice(:with_template, :archived) %>
+    </tbody>
+  </table>
+</div>

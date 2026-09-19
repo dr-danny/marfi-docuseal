@@ -1,15 +1,19 @@
-<% submissions = local_assigns[:selected] == 'submissions' %>
-<form action="<%= root_path %>" method="get" id="templates_submissions_toggle" class="marfi-app-nav-tabs">
-  <toggle-cookies data-value="templates" data-key="dashboard_view">
-    <button type="submit" class="marfi-app-action<%= ' is-active' unless submissions %>" title="<%= t('templates') %>" aria-label="<%= t('templates') %>">
-      <%= svg_icon('files', class: 'w-5 h-5 stroke-2') %>
-      <span class="marfi-app-action-label"><%= t('templates') %></span>
-    </button>
-  </toggle-cookies>
-  <toggle-cookies data-value="submissions" data-key="dashboard_view">
-    <button type="submit" class="marfi-app-action<%= ' is-active' if submissions %>" title="<%= t('submissions') %>" aria-label="<%= t('submissions') %>">
-      <%= svg_icon('send', class: 'w-5 h-5 stroke-2') %>
-      <span class="marfi-app-action-label"><%= t('submissions') %></span>
-    </button>
-  </toggle-cookies>
-</form>
+<% selected = local_assigns[:selected].to_s %>
+<% templates_active = selected == 'templates' && !marfi_archived? %>
+<% sent_active = selected == 'submissions' && !marfi_archived? %>
+<nav id="templates_submissions_toggle" class="marfi-app-nav-tabs" aria-label="Workspace">
+  <%= link_to root_path,
+              class: "marfi-app-action#{' is-active' if templates_active}",
+              title: t('templates'),
+              aria: { label: t('templates'), current: (templates_active ? 'page' : nil) } do %>
+    <%= svg_icon('files', class: 'w-5 h-5 stroke-2') %>
+    <span class="marfi-app-action-label"><%= t('templates') %></span>
+  <% end %>
+  <%= link_to sent_path,
+              class: "marfi-app-action#{' is-active' if sent_active}",
+              title: t('live_agreements'),
+              aria: { label: t('live_agreements'), current: (sent_active ? 'page' : nil) } do %>
+    <%= svg_icon('send', class: 'w-5 h-5 stroke-2') %>
+    <span class="marfi-app-action-label"><%= t('live_agreements') %></span>
+  <% end %>
+</nav>

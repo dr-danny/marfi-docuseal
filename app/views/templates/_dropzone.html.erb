@@ -1,5 +1,7 @@
+<% folder_name = local_assigns[:folder_name].presence || params[:folder_name] %>
 <%= form_for '', url: templates_upload_path, id: form_id = SecureRandom.uuid, method: :post, class: 'mt-4 block marfi-dropzone-form', html: { enctype: 'multipart/form-data' } do %>
   <input type="hidden" name="form_id" value="<%= form_id %>">
+  <% if folder_name.present? %><input type="hidden" name="folder_name" value="<%= folder_name %>"><% end %>
   <button type="submit" class="hidden"></button>
   <file-dropzone data-submit-on-upload="true" class="w-full">
     <label for="file_dropzone_input" class="w-full block relative hover:bg-base-200/30 border-2 border-base-300 border-dashed marfi-dropzone-area" data-target="file-dropzone.area">

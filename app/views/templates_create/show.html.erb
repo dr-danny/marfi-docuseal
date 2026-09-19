@@ -1,0 +1,19 @@
+<div class="group/header flex justify-between items-center w-full">
+  <h1 class="text-2xl truncate md:text-3xl sm:text-4xl font-bold">
+    <%= t('new_document_template') %>
+  </h1>
+</div>
+
+<div class="marfi-new-grid">
+  <section class="marfi-new-panel">
+    <h2 class="marfi-new-panel-title"><%= t('upload') %></h2>
+    <p class="marfi-new-panel-copy"><%= t('click_to_upload_or_drag_and_drop_html') %></p>
+    <%= render 'templates/dropzone', folder_name: params[:folder_name] %>
+  </section>
+
+  <section class="marfi-new-panel">
+    <h2 class="marfi-new-panel-title"><%= t('create') %></h2>
+    <p class="marfi-new-panel-copy"><%= t('document_name') %></p>
+    <%= render 'templates/file_form' %>
+  </section>
+</div>

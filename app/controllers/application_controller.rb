@@ -71,7 +71,7 @@ class ApplicationController < ActionController::Base
   def marfi_dashboard_nav?
     signed_in? &&
       %w[dashboard templates_dashboard submissions_dashboard template_folders
-         templates_archived submissions_archived].include?(controller_name)
+         templates_archived submissions_archived marfi_archived templates_create].include?(controller_name)
   end
 
   def marfi_dashboard_actions?
@@ -79,26 +79,29 @@ class ApplicationController < ActionController::Base
   end
 
   def marfi_dashboard_search?
-    marfi_dashboard_nav?
+    signed_in? &&
+      %w[dashboard templates_dashboard submissions_dashboard template_folders
+         templates_archived submissions_archived marfi_archived].include?(controller_name)
   end
 
   def marfi_dashboard_selected
     submissions_view =
       %w[submissions_dashboard submissions_archived].include?(controller_name) ||
+      (controller_name == 'marfi_archived' && params[:kind].to_s != 'templates') ||
       (controller_name == 'dashboard' && cookies[:dashboard_view] == 'submissions')
 
     submissions_view ? 'submissions' : 'templates'
   end
 
   def marfi_archived?
-    %w[templates_archived submissions_archived].include?(controller_name)
+    %w[templates_archived submissions_archived marfi_archived].include?(controller_name)
   end
 
   def marfi_archived_path
     if marfi_dashboard_selected == 'submissions'
-      submissions_archived_index_path
+      archived_path
     else
-      templates_archived_index_path
+      archived_path(kind: 'templates')
     end
   end
 

@@ -29,31 +29,24 @@
             <div class="marfi-app-actions">
               <% if marfi_dashboard_nav? %>
                 <%= render 'dashboard/toggle_view', selected: marfi_dashboard_selected %>
-              <% end %>
-              <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
-                <%= render 'templates/upload_button', folder_name: @template_folder&.full_name %>
-              <% end %>
-              <% if marfi_dashboard_nav? %>
                 <%= link_to marfi_archived_path,
                             id: 'templates_archived_button',
                             class: "marfi-app-action is-archive#{' is-active' if marfi_archived?}",
                             title: t('view_archived'),
-                            aria: { label: t('view_archived') } do %>
+                            aria: { label: t('view_archived'), current: (marfi_archived? ? 'page' : nil) } do %>
                   <%= svg_icon('trash', class: 'w-5 h-5 stroke-2') %>
                   <span class="marfi-app-action-label"><%= t('view_archived') %></span>
                 <% end %>
               <% end %>
               <% if marfi_dashboard_actions? && can?(:create, ::Template) %>
-                <open-modal-mobile data-disabled="<%= !Docuseal.multitenant? %>" class="flex">
-                  <%= link_to new_template_path({ folder_name: @template_folder&.full_name }.compact),
-                              class: 'marfi-app-action is-create',
-                              title: t('create'),
-                              aria: { label: t('create') },
-                              data: { turbo_frame: :modal } do %>
-                    <%= svg_icon('plus', class: 'w-5 h-5 stroke-2') %>
-                    <span class="marfi-app-action-label"><%= t('create') %></span>
-                  <% end %>
-                </open-modal-mobile>
+                <%= link_to marfi_new_path({ folder_name: @template_folder&.full_name }.compact),
+                            id: 'templates_create_button',
+                            class: "marfi-app-action is-create#{' is-active' if controller_name == 'templates_create'}",
+                            title: t('create'),
+                            aria: { label: t('create'), current: (controller_name == 'templates_create' ? 'page' : nil) } do %>
+                  <%= svg_icon('plus', class: 'w-5 h-5 stroke-2') %>
+                  <span class="marfi-app-action-label"><%= t('create') %></span>
+                <% end %>
               <% end %>
             </div>
           <% end %>

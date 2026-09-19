@@ -4,6 +4,8 @@ class SubmissionsDashboardController < ApplicationController
   load_and_authorize_resource :submission, parent: false
 
   def index
+    cookies.permanent[:dashboard_view] = 'submissions'
+
     @submissions = @submissions.left_joins(:template)
 
     @submissions = @submissions.where(archived_at: nil)

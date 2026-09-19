@@ -12,7 +12,7 @@ RSpec.describe 'Dashboard Page' do
     it 'shows empty state' do
       visit root_path
 
-      expect(page).to have_link('Create', href: new_template_path)
+      expect(page).to have_link('Create', href: marfi_new_path)
     end
   end
 
@@ -33,7 +33,7 @@ RSpec.describe 'Dashboard Page' do
 
       expect(page).to have_content('Templates')
       expect(page).to have_no_content(other_template.name)
-      expect(page).to have_link('Create', href: new_template_path)
+      expect(page).to have_link('Create', href: marfi_new_path)
     end
 
     it 'initializes the template creation process' do
@@ -59,7 +59,7 @@ RSpec.describe 'Dashboard Page' do
       visit root_path(q: submitter.email)
 
       expect(page).to have_content('Templates not Found')
-      expect(page).to have_content('Submissions')
+      expect(page).to have_content('Live Agreements')
       expect(page).to have_content(submitter.name)
     end
   end

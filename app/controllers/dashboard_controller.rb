@@ -11,7 +11,7 @@ class DashboardController < ApplicationController
 
   def index
     if cookies.permanent[:dashboard_view] == 'submissions'
-      SubmissionsDashboardController.dispatch(:index, request, response)
+      redirect_to sent_path(request.query_parameters)
     else
       TemplatesDashboardController.dispatch(:index, request, response)
     end

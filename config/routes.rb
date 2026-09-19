@@ -72,8 +72,20 @@ Rails.application.routes.draw do
   end
   resource :user_signature, only: %i[edit update destroy]
   resource :user_initials, only: %i[edit update destroy]
-  resources :submissions_archived, only: %i[index], path: 'submissions/archived'
-  resources :submissions, only: %i[index], controller: 'submissions_dashboard'
+  get 'sent', to: 'submissions_dashboard#index', as: :sent
+  get 'submissions', to: redirect { |_, req|
+    q = req.query_string.present? ? "?#{req.query_string}" : ''
+    "/sent#{q}"
+  }
+  get 'archived', to: 'marfi_archived#index', as: :archived
+  get 'submissions/archived', to: redirect { |_, req|
+    q = req.query_string.present? ? "?#{req.query_string}" : ''
+    "/archived#{q}"
+  }
+  get 'templates/archived', to: redirect { |_, req|
+    q = req.query_string.present? ? "&#{req.query_string}" : ''
+    "/archived?kind=templates#{q}"
+  }
   resources :submissions, only: %i[show destroy] do
     resources :unarchive, only: %i[create], controller: 'submissions_unarchive'
     resources :events, only: %i[index], controller: 'submission_events'
@@ -94,9 +106,10 @@ Rails.application.routes.draw do
   resources :webhook_preferences, only: %i[update]
   resource :templates_upload, only: %i[create]
   authenticated do
-    resource :templates_upload, only: %i[show], path: 'new'
+    get 'new', to: 'templates_create#show', as: :marfi_new
+    get 'new/open', to: 'templates_uploads#show'
   end
-  resources :templates_archived, only: %i[index], path: 'templates/archived'
+  # templates/archived redirects to /archived?kind=templates above
   resources :templates_shared, only: %i[index], path: 'templates/shared'
   resources :folders, only: %i[show edit update destroy], controller: 'template_folders'
   resources :template_sharings_testing, only: %i[create]

@@ -11,6 +11,8 @@ class TemplatesDashboardController < ApplicationController
   helper_method :selected_order
 
   def index
+    cookies.permanent[:dashboard_view] = 'templates'
+
     @default_folder = current_account.default_template_folder
 
     @template_folders =

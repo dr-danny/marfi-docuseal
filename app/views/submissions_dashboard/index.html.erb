@@ -3,7 +3,7 @@
 <% if Docuseal.demo? %><%= render 'shared/demo_alert' %><% end %>
 <div class="group/header flex justify-between items-center w-full mb-4">
   <h1 class="text-2xl truncate md:text-3xl sm:text-4xl font-bold">
-    <%= t('submissions') %>
+    <%= t('live_agreements') %>
   </h1>
 </div>
 <% if is_show_tabs %>
@@ -36,12 +36,7 @@
   </div>
 <% end %>
 <% if @pagy.count.nil? || @pagy.count > 0 %>
-  <div class="space-y-4">
-    <%= render partial: 'templates/submission', collection: @submissions, locals: { with_template: true } %>
-  </div>
-<% end %>
-<% if params[:q].blank? && params[:status].blank? && filter_params.blank? && @pagy.count.present? && @pagy.count < 5 %>
-  <%= render 'templates/dropzone' %>
+  <%= render 'submissions/agreements_table', submissions: @submissions, with_template: true %>
 <% end %>
 <% if @submissions.present? || (params[:q].blank? && filter_params.blank?) %>
   <% if @pagy.pages > 1 %>

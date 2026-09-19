@@ -274,4 +274,113 @@
       width: 100% !important;
     }
   }
+
+  .marfi-new-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .marfi-new-panel {
+    background: #fff;
+    border: 1px solid rgba(8, 9, 13, .1);
+    padding: 28px;
+    min-height: 280px;
+  }
+  .marfi-new-panel-title {
+    font-family: 'MARFI Auth Syne', sans-serif;
+    font-size: 22px;
+    letter-spacing: -.03em;
+    margin-bottom: 8px;
+  }
+  .marfi-new-panel-copy {
+    color: #6f717a;
+    margin-bottom: 18px;
+    font-size: 14px;
+  }
+  .marfi-new-panel .marfi-dropzone-area { height: 220px; }
+  .marfi-agreements-shell {
+    background: #fff;
+    border: 1px solid rgba(8, 9, 13, .1);
+    overflow: auto;
+  }
+  .marfi-agreements-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 860px;
+  }
+  .marfi-agreements-table th {
+    text-align: left;
+    font: 500 11px/1.2 'MARFI Auth Mono', monospace;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #6f717a;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(8, 9, 13, .12);
+    background: #f7f4ee;
+    white-space: nowrap;
+  }
+  .marfi-agreements-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(8, 9, 13, .08);
+    vertical-align: middle;
+  }
+  .marfi-agreements-row:hover td { background: #fbfaf7; }
+  .marfi-agreements-title {
+    color: #08090d;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .marfi-agreements-title:hover { color: #de3c4b; }
+  .marfi-agreements-meta,
+  .marfi-agreements-muted {
+    color: #6f717a;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .marfi-agreements-signers {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .marfi-status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font: 500 11px/1 'MARFI Auth Mono', monospace;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+  .marfi-status-pill.is-completed { background: rgba(22, 163, 74, .12); color: #15803d; border-color: rgba(22, 163, 74, .25); }
+  .marfi-status-pill.is-opened { background: rgba(217, 119, 6, .12); color: #b45309; border-color: rgba(217, 119, 6, .25); }
+  .marfi-status-pill.is-sent,
+  .marfi-status-pill.is-awaiting { background: rgba(37, 99, 235, .1); color: #1d4ed8; border-color: rgba(37, 99, 235, .22); }
+  .marfi-status-pill.is-declined { background: rgba(222, 60, 75, .1); color: #de3c4b; border-color: rgba(222, 60, 75, .25); }
+  .marfi-agreements-cell.is-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+  }
+  .marfi-agreements-link {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #08090d;
+    font: 500 12px/1 'MARFI Auth Mono', monospace;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .marfi-agreements-link:hover { color: #de3c4b; }
+  .marfi-agreements-link.is-danger:hover { color: #de3c4b; }
+  @media (max-width: 900px) {
+    .marfi-new-grid { grid-template-columns: 1fr; }
+  }
+
 </style>

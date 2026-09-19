@@ -475,12 +475,18 @@ en: &en
   configure_sms_settings_in_order_to_send_text_messages_: 'Configure SMS settings in order to send text messages:'
   go_to_sms_settings: Go to SMS settings
   back_to_active: Back to Active
-  submissions: Submissions
+  submissions: Live Agreements
+  live_agreements: Live Agreements
   templates: Templates
+  agreement: Agreement
+  signer: Signer
+  status: Status
+  last_activity: Last activity
+  actions: Actions
   document_templates_html: <span class="hidden lg:inline">Document</span> Templates
   archived: Archived
   search: Search
-  submissions_not_found: Submissions not Found
+  submissions_not_found: Live Agreements not Found
   create: Create
   view_archived: View Archived
   all: All

@@ -85,7 +85,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(response.body).not_to include(Docuseal::CHATGPT_URL)
   end
 
-  it 'puts dashboard search, upload, create, and workspace tabs in the navbar' do
+  it 'puts dashboard search, create, and workspace tabs in the navbar' do
     user = create(:user)
     sign_in user
 
@@ -96,28 +96,57 @@ RSpec.describe 'MARFI UI removals', type: :request do
     header = html.at_css('.marfi-app-header')
     expect(header).to be_present
     expect(header.at_css('#search')).to be_present
-    expect(header.at_css('#templates_upload_button')).to be_present
+    expect(header.at_css('#templates_upload_button')).to be_nil
+    expect(header.at_css('#templates_create_button')).to be_present
+    expect(header.at_css('#templates_create_button')['href']).to include('/new')
     expect(header.at_css('#templates_archived_button')).to be_present
     expect(header.at_css('#templates_archived_button')['class']).to include('is-archive')
+    expect(header.at_css('#templates_archived_button')['href']).to include('/archived')
     expect(header.at_css('#templates_submissions_toggle')).to be_present
+    expect(header.at_css('#templates_submissions_toggle a[href="/sent"]')).to be_present
     expect(header.text).to include('Templates')
-    expect(header.text).to include('Submissions')
+    expect(header.text).to include('Live Agreements')
     expect(header.text).to include('Create')
     expect(header.text).to include('Settings')
     expect(html.at_css('dashboard-dropzone #templates_submissions_toggle')).to be_nil
     expect(html.at_css('dashboard-dropzone #search')).to be_nil
   end
 
+  it 'uses real slugs for sent, archived, and new' do
+    user = create(:user)
+    sign_in user
+
+    get sent_path
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('Live Agreements')
+    expect(response.body).to include('marfi-agreements-table')
+
+    get archived_path(kind: 'templates')
+    expect(response).to have_http_status(:ok)
+    header = Nokogiri::HTML(response.body).at_css('.marfi-app-header')
+    expect(header.at_css('#search')).to be_present
+    expect(header.at_css('#templates_upload_button')).to be_nil
+    expect(header.at_css('#templates_create_button')).to be_present
+    expect(header.at_css('#templates_archived_button')).to be_present
+    expect(header.at_css('#templates_submissions_toggle')).to be_present
+
+    get marfi_new_path
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('marfi-new-grid')
+    expect(response.body).to include('file_dropzone_input')
+  end
+
   it 'keeps the same navbar actions on archived lists' do
     user = create(:user)
     sign_in user
 
-    get templates_archived_index_path
+    get archived_path
 
     expect(response).to have_http_status(:ok)
     header = Nokogiri::HTML(response.body).at_css('.marfi-app-header')
     expect(header.at_css('#search')).to be_present
-    expect(header.at_css('#templates_upload_button')).to be_present
+    expect(header.at_css('#templates_upload_button')).to be_nil
+    expect(header.at_css('#templates_create_button')).to be_present
     expect(header.at_css('#templates_archived_button')).to be_present
     expect(header.at_css('#templates_submissions_toggle')).to be_present
     expect(header.text).to include('Create')
@@ -133,6 +162,7 @@ RSpec.describe 'MARFI UI removals', type: :request do
     header = Nokogiri::HTML(response.body).at_css('.marfi-app-header')
     expect(header.at_css('#search')).to be_nil
     expect(header.at_css('#templates_upload_button')).to be_nil
+    expect(header.at_css('#templates_create_button')).to be_nil
     expect(header.at_css('#templates_submissions_toggle')).to be_nil
     expect(header.text).to include('Settings')
   end

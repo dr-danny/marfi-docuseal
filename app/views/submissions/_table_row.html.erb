@@ -1,0 +1,55 @@
+<% status_badges = { 'awaiting' => 'is-awaiting', 'sent' => 'is-sent', 'completed' => 'is-completed', 'opened' => 'is-opened', 'declined' => 'is-declined', 'expired' => 'is-declined' } %>
+<% template = submission.template %>
+<% submitters = (submission.template_submitters || template&.submitters || []).filter_map { |item| submission.submitters.find { |e| e.uuid == item['uuid'] } } %>
+<% submitters = submission.submitters.to_a if submitters.blank? %>
+<% latest = submitters.select(&:completed_at?).max_by(&:completed_at) || submitters.max_by { |s| s.status_event_at || s.created_at } %>
+<% row_status = if submission.expired? && !submission.completed_at?
+                  'expired'
+                elsif submission.completed_at?
+                  'completed'
+                else
+                  (latest&.status || 'awaiting')
+                end %>
+<% activity_at = latest&.status_event_at || submission.completed_at || submission.created_at %>
+<tr class="marfi-agreements-row">
+  <td class="marfi-agreements-cell is-agreement">
+    <a href="<%= submission_path(submission) %>" class="marfi-agreements-title">
+      <%= (submission.name.presence || template&.name).to_s %>
+    </a>
+    <% if local_assigns[:with_template] && template.present? %>
+      <div class="marfi-agreements-meta"><%= template.name %></div>
+    <% end %>
+  </td>
+  <td class="marfi-agreements-cell is-signer">
+    <% if submitters.blank? %>
+      <span class="marfi-agreements-muted">—</span>
+    <% else %>
+      <div class="marfi-agreements-signers">
+        <% submitters.first(3).each do |submitter| %>
+          <span><%= submitter.name.presence || submitter.email.presence || submitter.phone %></span>
+        <% end %>
+        <% if submitters.size > 3 %>
+          <span class="marfi-agreements-muted">+<%= submitters.size - 3 %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </td>
+  <td class="marfi-agreements-cell is-status">
+    <span class="marfi-status-pill <%= status_badges[row_status] %>"><%= t(row_status) %></span>
+  </td>
+  <td class="marfi-agreements-cell is-activity">
+    <%= l(activity_at.in_time_zone(current_account.timezone), format: :short, locale: current_account.locale) %>
+  </td>
+  <td class="marfi-agreements-cell is-actions">
+    <a href="<%= submission_path(submission) %>" class="marfi-agreements-link"><%= t('view') %></a>
+    <% if submission.completed_at? %>
+      <download-button data-src="<%= submission_download_index_path(submission) %>" class="marfi-agreements-link">
+        <span data-target="download-button.defaultButton"><%= t('download') %></span>
+        <span class="hidden" data-target="download-button.loadingButton"><%= t('download')[..-2] %>...</span>
+      </download-button>
+    <% end %>
+    <% if !submission.completed_at? && !submission.archived_at? && !template&.archived_at? && can?(:destroy, submission) %>
+      <%= button_to t('archive'), submission_path(submission), method: :delete, form: { class: 'inline' }, class: 'marfi-agreements-link is-danger marfi-archive-action', data: { turbo_confirm: t('are_you_sure_') } %>
+    <% end %>
+  </td>
+</tr>
