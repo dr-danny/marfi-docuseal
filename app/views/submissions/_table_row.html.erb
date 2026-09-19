@@ -69,6 +69,8 @@
         <a href="<%= submit_form_path(slug: signable.slug) %>" data-turbo="false" target="_blank" class="marfi-agreements-icon is-sign" title="<%= t('sign_now') %>" aria-label="<%= t('sign_now') %>">
           <%= svg_icon('writing_sign', class: 'w-5 h-5 stroke-2') %>
         </a>
+      <% else %>
+        <span class="marfi-agreements-icon is-spacer" aria-hidden="true"></span>
       <% end %>
       <a href="<%= submission_path(submission) %>" class="marfi-agreements-icon" title="<%= t('view') %>" aria-label="<%= t('view') %>">
         <%= svg_icon('eye', class: 'w-5 h-5 stroke-2') %>
