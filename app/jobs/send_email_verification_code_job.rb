@@ -15,15 +15,13 @@ class SendEmailVerificationCodeJob
 
     locale = params['locale'].presence || submitter.account.locale
 
-    # Generate code using phone as key (to match SMS 2FA verification logic)
+    # Generate TOTP code using phone+slug key (to match SMS 2FA verification logic)
     value = [submitter.phone.downcase.strip, submitter.slug].join(':')
-    code = SecureRandom.random_bytes(3).unpack1('H*').to_i(16) % 1_000_000
-    code_str = code.to_s.rjust(6, '0')
-    EmailVerificationCodes.generate(code_str, value, expires_in: 15.minutes)
+    code = EmailVerificationCodes.generate(value)
 
-    # Send email with the code using the cross-channel mailer method
+    # Send email with the TOTP code
     I18n.with_locale(locale || submitter.account.locale) do
-      SubmitterMailer.cross_channel_email_verification(submitter, code_str).deliver_later
+      SubmitterMailer.cross_channel_email_verification(submitter, code).deliver_later
     end
 
     SubmissionEvent.create!(submitter_id: submitter.id,

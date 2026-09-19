@@ -11,13 +11,9 @@ class SendSmsVerificationCodeJob
     return if submitter.submission.expired?
     return unless MarfiSms.configured?(submitter.account)
 
-    # Generate 6-digit OTP
-    code = SecureRandom.random_bytes(3).unpack1('H*').to_i(16) % 1_000_000
-    code_str = code.to_s.rjust(6, '0')
-
-    # Store hashed code (same as email verification)
+    # Generate TOTP code using phone+slug key
     value = [submitter.phone.downcase.strip, submitter.slug].join(':')
-    EmailVerificationCodes.generate(code_str, value, expires_in: 15.minutes)
+    code_str = EmailVerificationCodes.generate(value)
 
     # Send SMS
     body = I18n.t('sms_verification_code_is', code: code_str, locale: submitter.account.locale || I18n.default_locale)
