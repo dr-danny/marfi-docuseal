@@ -38,7 +38,7 @@ class SmsSettingsController < ApplicationController
     @encrypted_config.value = value
 
     if @encrypted_config.save
-      redirect_to settings_sms_index_path, notice: I18n.t('changes_have_been_saved')
+      redirect_to settings_sms_configs_path, notice: I18n.t('changes_have_been_saved')
     else
       flash.now[:alert] = @encrypted_config.errors.full_messages.first || 'Unable to save SMS settings.'
       render :index, status: :unprocessable_content
@@ -50,7 +50,7 @@ class SmsSettingsController < ApplicationController
 
   def destroy
     @encrypted_config.destroy!
-    redirect_to settings_sms_index_path, notice: 'SMS settings have been reset.'
+    redirect_to settings_sms_configs_path, notice: 'SMS settings have been reset.'
   end
 
   private

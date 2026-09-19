@@ -8,7 +8,7 @@
       Recipients can reply STOP to unsubscribe or HELP for help.
     </p>
 
-    <%= form_for @encrypted_config, url: settings_sms_index_path, method: :post, html: { autocomplete: 'off', class: 'space-y-4' } do |f| %>
+    <%= form_for @encrypted_config, url: settings_sms_configs_path, method: :post, html: { autocomplete: 'off', class: 'space-y-4' } do |f| %>
       <%= f.fields_for :value do |ff| %>
         <div class="form-control">
           <%= ff.label :account_sid, 'Twilio Account SID', class: 'label' %>
@@ -36,7 +36,7 @@
         <div class="form-control">
           <%= ff.label :default_body, 'Default invitation SMS', class: 'label' %>
           <%= ff.text_area :default_body,
-                value: value['default_body'].presence || MarfiSms.default_invitation_body,
+                value: value['default_body'].presence || "Hi {submitter.name}\n\nYour MARFI document is ready to be signed, please access it here:\n{submitter.link}\n\nReply STOP to unsubscribe or HELP for help.",
                 rows: 6,
                 class: 'base-input font-mono text-sm',
                 dir: 'auto' %>
@@ -58,7 +58,7 @@
 
     <% if @encrypted_config.persisted? %>
       <div class="flex justify-center pt-2">
-        <%= button_to 'Reset SMS settings', settings_sms_path(@encrypted_config), method: :delete, class: 'link', data: { turbo_confirm: t('are_you_sure_') } %>
+        <%= button_to 'Reset SMS settings', settings_sms_config_path(@encrypted_config), method: :delete, class: 'link', data: { turbo_confirm: t('are_you_sure_') } %>
       </div>
       <div class="mt-6 rounded-xl border border-base-300 bg-base-200/40 p-4 text-sm space-y-1">
         <div><span class="font-medium">Provider:</span> Twilio</div>

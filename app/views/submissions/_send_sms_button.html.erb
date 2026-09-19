@@ -16,7 +16,7 @@
                     class: 'btn btn-sm btn-primary w-full',
                     form: { data: { turbo_confirm: 'Send this agreement invitation by SMS via Twilio?' } } %>
     <% else %>
-      <%= link_to 'Configure Twilio SMS', settings_sms_index_path, class: 'btn btn-sm btn-outline w-full', data: { turbo: false } %>
+      <%= link_to 'Configure Twilio SMS', settings_sms_configs_path, class: 'btn btn-sm btn-outline w-full', data: { turbo: false } %>
     <% end %>
   </div>
 <% end %>
