@@ -75,8 +75,7 @@ class ApplicationController < ActionController::Base
   end
 
   def marfi_dashboard_actions?
-    signed_in? &&
-      %w[dashboard templates_dashboard submissions_dashboard template_folders].include?(controller_name)
+    marfi_dashboard_nav?
   end
 
   def marfi_dashboard_search?

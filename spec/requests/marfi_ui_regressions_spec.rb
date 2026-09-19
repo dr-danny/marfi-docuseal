@@ -108,6 +108,21 @@ RSpec.describe 'MARFI UI removals', type: :request do
     expect(html.at_css('dashboard-dropzone #search')).to be_nil
   end
 
+  it 'keeps the same navbar actions on archived lists' do
+    user = create(:user)
+    sign_in user
+
+    get templates_archived_index_path
+
+    expect(response).to have_http_status(:ok)
+    header = Nokogiri::HTML(response.body).at_css('.marfi-app-header')
+    expect(header.at_css('#search')).to be_present
+    expect(header.at_css('#templates_upload_button')).to be_present
+    expect(header.at_css('#templates_archived_button')).to be_present
+    expect(header.at_css('#templates_submissions_toggle')).to be_present
+    expect(header.text).to include('Create')
+  end
+
   it 'hides dashboard navbar actions on settings screens' do
     user = create(:user)
     sign_in user
