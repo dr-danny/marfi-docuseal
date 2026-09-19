@@ -101,4 +101,32 @@ module MarfiAgreementsHelper
       [STATUS_SORT_RANK.fetch(status, 99), -sent_at.to_i, -submission.id]
     end
   end
+
+  def agreement_public_id(submission)
+    prefs = submission.preferences.is_a?(Hash) ? submission.preferences : {}
+    existing = prefs['agreement_id'].presence || prefs[:agreement_id].presence
+    return existing if existing.present?
+
+    # Stable DocuSign-like ID without a schema migration: AGR-XXXXXXXXXXXX
+    # Derived from the unique slug so existing agreements get a fixed ID.
+    digest = Digest::SHA1.hexdigest("marfi-agreement:#{submission.slug}")[0, 12].upcase
+    "AGR-#{digest[0,4]}-#{digest[4,4]}-#{digest[8,4]}"
+  end
+
+  def agreement_share_url(submission)
+    submitter = agreement_submitters(submission).find { |s| s.completed_at.blank? && s.declined_at.blank? } ||
+                agreement_submitters(submission).first
+    return if submitter.blank?
+
+    submit_form_url(slug: submitter.slug, host: form_link_host)
+  end
+
+  def agreement_editable?(submission)
+    return false unless signed_in?
+    return false if submission.completed_at?
+    return false if submission.archived_at?
+    return false if submission.template&.archived_at?
+    return false if submission.expired?
+    can?(:update, submission) && can?(:create, Submission)
+  end
 end

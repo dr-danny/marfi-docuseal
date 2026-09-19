@@ -50,6 +50,9 @@
               <% end %>
             </div>
           <% end %>
+          <% if marfi_agreement_detail? && @submission %>
+            <%= render 'submissions/navbar_actions' %>
+          <% end %>
           <%= render 'shared/navbar_buttons' %>
         </div>
       <% end %>

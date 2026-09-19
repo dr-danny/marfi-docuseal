@@ -65,6 +65,8 @@ class Submission < ApplicationRecord
 
   attribute :slug, :string, default: -> { SecureRandom.base58(14) }
 
+  before_validation :assign_marfi_agreement_id, on: :create
+
   validate :completed_documents_cannot_be_archived
 
   has_one_attached :audit_trail
@@ -191,6 +193,15 @@ class Submission < ApplicationRecord
   end
 
   private
+
+  def assign_marfi_agreement_id
+    prefs = preferences.is_a?(Hash) ? preferences.deep_dup : {}
+    return if prefs['agreement_id'].present?
+
+    token = SecureRandom.hex(6).upcase
+    prefs['agreement_id'] = "AGR-#{token[0,4]}-#{token[4,4]}-#{token[8,4]}"
+    self.preferences = prefs
+  end
 
   def completed_documents_cannot_be_archived
     return if new_record? || completed_at.blank?

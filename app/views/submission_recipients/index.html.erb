@@ -1,0 +1,182 @@
+<% values = @submission.submitters.reduce({}) { |acc, sub| acc.merge(sub.values) } %>
+<% service_url_time = ActiveStorage::Attachment.service_url_time %>
+<% attachments_index = ActiveStorage::Attachment.where(record: @submission.submitters, name: :attachments).preload(:blob).index_by(&:uuid) %>
+<%= render 'shared/turbo_modal_large', title: 'Recipients' do %>
+  <div class="marfi-recipients-modal px-4 py-3">
+    <div class="marfi-recipients-meta mb-3">
+      <div class="marfi-recipients-id">Agreement ID <span><%= agreement_public_id(@submission) %></span></div>
+      <div class="marfi-recipients-name" dir="auto"><%= @submission.name || @submission.template&.name %></div>
+    </div>
+      <% colors = %w[bg-red-500 bg-sky-500 bg-emerald-500 bg-yellow-300 bg-purple-600 bg-pink-500 bg-cyan-500 bg-orange-500 bg-lime-500 bg-indigo-500] %>
+      <% submitter_fields_index = (@submission.template_fields || @submission.template.fields).group_by { |f| f['submitter_uuid'] } %>
+      <% submitter_field_counters = Hash.new { 0 } %>
+      <% (@submission.template_submitters || @submission.template.submitters).each_with_index do |item, index| %>
+        <% submitter = @submission.submitters.find { |e| e.uuid == item['uuid'] } %>
+        <div class="marfi-submission-party">
+          <div class="marfi-submission-party-card group rounded-md px-2 py-1 mb-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-1">
+                <span class="mx-1 w-3 h-3 shrink-0 rounded-full <%= colors[index % 10] %>"></span>
+                <span class="text-lg" dir="auto">
+                  <%= (@submission.template_submitters || @submission.template.submitters).find { |e| e['uuid'] == submitter&.uuid }&.dig('name') || "#{(index + 1).ordinalize} Submitter" %>
+                </span>
+              </div>
+              <% if signed_in? && can?(:update, @submission) && submitter && !submitter.completed_at? && !@submission.completed_at? && !submitter.declined_at? && !@submission.archived_at? && !@submission.template&.archived_at? && !@submission.expired? && !submitter.start_form_submission_events.any? %>
+                <span class="tooltip tooltip-left tooltip-no-touch" data-tip="<%= t('edit') %>">
+                  <open-modal-mobile>
+                    <%= link_to edit_submitter_path(submitter), class: 'shrink-0 inline md:hidden md:group-hover:inline', data: { turbo_frame: 'modal' } do %>
+                      <%= svg_icon('pencil', class: 'w-5 h-5') %>
+                    <% end %>
+                  </open-modal-mobile>
+                </span>
+              <% end %>
+            </div>
+            <% if submitter&.name.present? %>
+              <div class="flex items-center space-x-1 mt-1">
+                <%= svg_icon('user', class: 'w-5 h-5') %>
+                <span>
+                  <%= submitter&.name %>
+                </span>
+              </div>
+            <% end %>
+            <% if submitter&.email.present? %>
+              <div class="flex items-center space-x-1 mt-1">
+                <%= svg_icon('mail', class: 'w-5 h-5') %>
+                <span>
+                  <%= submitter.email || 'N/A' %>
+                </span>
+              </div>
+            <% end %>
+            <% if submitter&.phone.present? %>
+              <div class="flex items-center space-x-1 mt-1">
+                <%= svg_icon('phone', class: 'w-5 h-5') %>
+                <span>
+                  <%= submitter.phone %>
+                </span>
+              </div>
+            <% end %>
+            <div class="flex items-center space-x-1 mt-1">
+              <% if submitter&.viewer? %>
+                <%= svg_icon(submitter.opened_at? ? 'file_check' : 'file_unknown', class: 'w-5 h-5') %>
+              <% elsif submitter && !submitter.completed_at? && @submission.completed_at? %>
+                <%= svg_icon('writing_off', class: 'w-5 h-5') %>
+              <% elsif @submission.expire_at? && submitter && !submitter.completed_at? %>
+                <%= svg_icon('clock_exclamation', class: 'w-5 h-5') %>
+              <% else %>
+                <%= svg_icon('writing', class: 'w-5 h-5') %>
+              <% end %>
+              <span>
+                <% if submitter&.declined_at? %>
+                  <%= t('declined_on_time', time: l(submitter.declined_at.in_time_zone(@submission.account.timezone), format: :short, locale: @submission.account.locale)) %>
+                <% elsif submitter&.viewer? %>
+                  <% if submitter.opened_at? %>
+                    <%= t('viewed_on_time', time: l(submitter.opened_at.in_time_zone(@submission.account.timezone), format: :short, locale: @submission.account.locale)) %>
+                  <% elsif @submission.completed_at? %>
+                    <%= t('not_viewed') %>
+                  <% else %>
+                    <%= t('not_viewed_yet') %>
+                  <% end %>
+                <% elsif submitter %>
+                  <% if submitter.completed_at? %>
+                    <%= l(submitter.completed_at.in_time_zone(@submission.account.timezone), format: :long, locale: @submission.account.locale) %>
+                  <% elsif @submission.completed_at? %>
+                    <%= t('not_completed') %>
+                  <% elsif @submission.expire_at? %>
+                    <% if @submission.expired? %>
+                      <%= t(:expired) %>
+                    <% else %>
+                      <%= t('expire_on_time', time: l(@submission.expire_at.in_time_zone(@submission.account.timezone), format: :short, locale: @submission.account.locale)) %>
+                    <% end %>
+                  <% else %>
+                    <%= t('not_completed_yet') %>
+                  <% end %>
+                <% else %>
+                  <%= t('not_invited_yet') %>
+                <% end %>
+              </span>
+            </div>
+            <% if submitter&.declined_at? %>
+              <div class="flex items-center space-x-1 mt-1">
+                <span>
+                  <%= t('reason') %>:
+                  <%= simple_format(h(submitter.submission_events.find_by(event_type: :decline_form).data['reason']), {}, sanitize: false) %>
+                </span>
+              </div>
+            <% end %>
+            <% if signed_in? && submitter && submitter.email && !submitter.completed_at && !@submission.completed_at? && !@submission.archived_at? && !@submission.template&.archived_at? && can?(:update, @submission) && (Docuseal.multitenant? || Accounts.can_send_emails?(current_account)) && !@submission.expired? && !submitter.declined_at? %>
+              <div class="mt-2 mb-1">
+                <%= button_to button_title(title: submitter.sent_at? ? t('re_send_email') : t('send_email'), disabled_with: t('sending')), submitter_send_email_index_path(submitter), class: 'btn btn-sm btn-primary w-full' %>
+              </div>
+            <% end %>
+            <% if signed_in? && submitter && submitter.phone && !submitter.completed_at && !@submission.completed_at? && !@submission.archived_at? && !@submission.template&.archived_at? && can?(:update, @submission) && !@submission.expired? && !submitter.declined_at? %>
+              <%= render 'submissions/send_sms_button', submitter: %>
+            <% end %>
+            <% if signed_in? && submitter && !submitter.viewer? && !submitter.completed_at? && !@submission.completed_at? && !@submission.archived_at? && !@submission.template&.archived_at? && can?(:create, @submission) && !@submission.expired? && !submitter.declined_at? %>
+              <div class="mt-2 mb-1">
+                <a class="btn btn-sm btn-primary w-full" target="_blank" href="<%= submit_form_path(slug: submitter.slug) %>">
+                  <%= t('sign_in_person') %>
+                </a>
+              </div>
+            <% end %>
+            <% if signed_in? && submitter && submitter.completed_at? && submitter.email == current_user.email && submitter.completed_at > 1.month.ago && can?(:update, @submission) %>
+              <div class="mt-2 mb-1">
+                <%= button_to t('resubmit'), submitters_resubmit_path(submitter), method: :put, class: 'btn btn-sm btn-primary w-full', form: { target: '_blank' }, data: { turbo: false } %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="px-1.5 mb-4">
+          <% submitter_fields_index[item['uuid']].to_a.each_with_index do |field, index| %>
+            <% submitter_field_counters[field['type']] += 1 %>
+            <% value = values[field['uuid']].presence || (field['default_value'] != '{{date}}' && field['readonly'] == true && field['default_value'].present? ? Submitters::SubmitValues.template_default_value_for_submitter(field['default_value'], @submission.submitters.find { |e| e.uuid == field['submitter_uuid'] }, with_time: false) : nil) %>
+            <% next if value.blank? %>
+            <% next if field['type'] == 'heading' || field['type'] == 'strikethrough' %>
+            <div class="pt-2.5 border-b border-base-300">
+              <div class="text-xs font-medium uppercase mb-0.5" dir="auto">
+                <%= field['name'].presence || "#{t("#{field['type']}_field")} #{submitter_field_counters[field['type']]}" %>
+              </div>
+              <div dir="auto">
+                <% if field['type'].in?(%w[signature initials]) %>
+                  <div class="w-full bg-base-300 py-1">
+                    <% img_height = attachments_index[value].metadata['height'] %>
+                    <img class="object-contain mx-auto" style="<%= 'max-' if img_height %>height: <%= field['type'] == 'signature' ? 100 : 50 %>px" height="<%= img_height %>" width="<%= attachments_index[value].metadata['width'] %>" src="<%= attachments_index[value].url(time: service_url_time) %>" loading="lazy" alt="<%= field['name'] || field['title'] || field['type'] %>">
+                  </div>
+                <% elsif field['type'].in?(['image', 'stamp', 'kba']) && attachments_index[value].image? %>
+                  <% img_height = attachments_index[value].metadata['height'] %>
+                  <img class="object-contain mx-auto" style="<%= 'max-' if img_height %>height: 200px" height="<%= img_height %>" width="<%= attachments_index[value].metadata['width'] %>" src="<%= attachments_index[value].url(time: service_url_time) %>" loading="lazy" alt="<%= field['name'] || field['title'] || field['type'] %>">
+                <% elsif field['type'].in?(['file', 'payment', 'image']) %>
+                  <div class="flex flex-col justify-center">
+                    <% Array.wrap(value).each do |val| %>
+                      <a target="_blank" class="flex items-center space-x-1" href="<%= attachments_index[val].url %>">
+                        <%= svg_icon('paperclip', class: 'w-4 h-4') %>
+                        <span>
+                          <%= attachments_index[val].filename %>
+                        </span>
+                      </a>
+                    <% end %>
+                  </div>
+                <% elsif field['type'] == 'checkbox' %>
+                  <%= svg_icon('check', class: 'w-6 h-6') %>
+                <% else %>
+                  <% if field['type'] == 'number' %>
+                    <% value = NumberUtils.format_number(value, field.dig('preferences', 'format')) %>
+                  <% elsif field['type'] == 'date' %>
+                    <% value = TimeUtils.format_date_string(value, field.dig('preferences', 'format'), @submission.account.locale, timezone: (with_submitter_timezone ? (submitter.timezone.presence || @submission.account.timezone) : @submission.account.timezone)) %>
+                  <% end %>
+                  <% if (mask = field.dig('preferences', 'mask').presence) %>
+                    <% if signed_in? && can?(:read, @submission) %>
+                      <div class="[&:not(:hover)]:after:content-[attr(data-value)] block whitespace-pre-wrap group" data-value="<%= Array.wrap(value).map { |e| TextUtils.mask_value(e, mask) }.join(', ') %>"><span class="hidden group-hover:block"><%= Array.wrap(value).join(', ') %></span></div>
+                    <% else %>
+                      <div class="whitespace-pre-wrap"><%= Array.wrap(value).map { |e| TextUtils.mask_value(e, mask) }.join(', ') %></div>
+                    <% end %>
+                  <% else %>
+                    <div class="whitespace-pre-wrap"><%= Array.wrap(value).join(', ') %></div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+  </div>
+<% end %>

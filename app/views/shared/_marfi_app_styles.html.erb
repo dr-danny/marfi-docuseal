@@ -861,98 +861,110 @@
 
 
   /* Agreement detail / submission show */
+  .marfi-app-main:has(.marfi-submission-show) {
+    max-width: none;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
   .marfi-submission-show {
-    padding-top: 8px;
-    padding-bottom: 24px;
+    width: min(1600px, calc(100% - 24px));
+    margin: 0 auto;
+    padding: 8px 12px 20px;
   }
-  .marfi-submission-toolbar {
-    background: #08090d !important;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 16px;
-    padding-left: 14px;
-    margin-bottom: 14px;
-    box-shadow: 0 10px 30px rgba(8,9,13,.18);
-  }
-  .marfi-submission-back {
-    display: inline-flex;
+  .marfi-submission-identity {
+    display: flex;
     align-items: center;
-    gap: 8px;
-    flex: none;
-    min-height: 36px;
-    padding: 0 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(242,238,231,.22);
-    color: #f2eee7 !important;
-    background: transparent;
-    font: 600 11px/1 'MARFI Auth Mono', monospace;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    text-decoration: none !important;
-  }
-  .marfi-submission-back:hover {
-    background: #de3c4b;
-    border-color: #de3c4b;
-    color: #fffaf3 !important;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 4px 0 12px;
   }
   .marfi-submission-kicker {
     margin: 0;
-    color: #999ba5;
+    color: #6f717a;
     font: 600 10px/1.2 'MARFI Auth Mono', monospace;
     letter-spacing: .08em;
     text-transform: uppercase;
   }
   .marfi-submission-title {
     margin: 2px 0 0;
-    color: #fffaf3;
+    color: #08090d;
     font: 650 22px/1.15 'MARFI Auth Syne', sans-serif;
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
-  .marfi-submission-toolbar .white-button,
-  .marfi-submission-toolbar .base-button,
-  .marfi-submission-toolbar a.white-button {
-    border-radius: 999px !important;
-    border-color: rgba(242,238,231,.22) !important;
-    background: transparent !important;
-    color: #f2eee7 !important;
-    font: 600 11px/1 'MARFI Auth Mono', monospace !important;
+  .marfi-agreement-id {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(8,9,13,.14);
+    background: #fffaf3;
+    color: #08090d;
+    font: 600 11px/1 'MARFI Auth Mono', monospace;
     letter-spacing: .05em;
-    text-transform: uppercase;
   }
-  .marfi-submission-toolbar .white-button:hover,
-  .marfi-submission-toolbar .base-button:hover,
-  .marfi-submission-toolbar a.white-button:hover {
-    background: #de3c4b !important;
-    border-color: #de3c4b !important;
-    color: #fffaf3 !important;
-  }
-  .marfi-submission-toolbar .base-button {
-    background: #de3c4b !important;
-    border-color: #de3c4b !important;
-    color: #fffaf3 !important;
-  }
-  .marfi-submission-body {
-    gap: 12px;
-  }
-  .marfi-submission-parties {
+  .marfi-agreement-id span { white-space: nowrap; }
+  .marfi-submission-stage {
     background: #fffaf3;
     border: 1px solid rgba(8,9,13,.1);
     border-radius: 16px;
-    padding: 10px 8px 12px !important;
+    padding: 10px 8px 12px;
+    box-shadow: 0 10px 30px rgba(8,9,13,.06);
   }
-  .marfi-submission-party {
-    background: transparent !important;
+  .marfi-submission-document {
+    min-height: calc(100vh - 180px);
   }
-  .marfi-submission-party-card {
+  .marfi-agreement-actions .marfi-agreement-share span.hidden,
+  .marfi-agreement-actions .marfi-agreement-share span.peer-checked\\:flex,
+  .marfi-agreement-actions .marfi-agreement-share .hidden.md\\:inline,
+  .marfi-agreement-actions .marfi-agreement-share span > span {
+    display: none !important;
+  }
+  .marfi-agreement-actions clipboard-copy label.marfi-app-action {
+    cursor: pointer;
+  }
+  .marfi-agreement-actions clipboard-copy label.marfi-app-action span.flex {
+    margin: 0;
+    gap: 0;
+  }
+  .marfi-app-action.is-edit:hover,
+  .marfi-app-action.is-edit:focus-visible {
+    background: #de3c4b !important;
+    border-color: #de3c4b !important;
+    color: #fffaf3 !important;
+  }
+  .marfi-recipients-meta {
+    border-bottom: 1px solid rgba(8,9,13,.1);
+    padding-bottom: 10px;
+  }
+  .marfi-recipients-id {
+    color: #6f717a;
+    font: 600 10px/1.2 'MARFI Auth Mono', monospace;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .marfi-recipients-id span {
+    color: #08090d;
+    margin-left: 6px;
+  }
+  .marfi-recipients-name {
+    margin-top: 4px;
+    color: #08090d;
+    font: 650 18px/1.2 'MARFI Auth Syne', sans-serif;
+  }
+  .marfi-recipients-modal .marfi-submission-party-card {
     background: #fff;
     border: 1px solid rgba(8,9,13,.12) !important;
     border-radius: 12px !important;
-    box-shadow: 0 1px 0 rgba(8,9,13,.04);
   }
-  .marfi-submission-party-card .btn.btn-sm.btn-primary,
-  .marfi-submission-party-card .btn.btn-primary {
+  .marfi-recipients-modal .btn.btn-sm.btn-primary,
+  .marfi-recipients-modal .btn.btn-primary {
     border-radius: 999px !important;
     background: #de3c4b !important;
     border-color: #de3c4b !important;
@@ -962,4 +974,10 @@
     text-transform: uppercase;
   }
 
+  .marfi-agreements-meta.is-id {
+    color: #6f717a;
+    font: 600 10px/1.2 'MARFI Auth Mono', monospace;
+    letter-spacing: .04em;
+  }
 </style>
+

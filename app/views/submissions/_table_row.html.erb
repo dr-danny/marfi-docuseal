@@ -16,6 +16,7 @@
     <a href="<%= submission_path(submission) %>" class="marfi-agreements-title">
       <%= agreement_name %>
     </a>
+    <div class="marfi-agreements-meta is-id"><%= agreement_public_id(submission) %></div>
     <% if local_assigns[:with_template] && template.present? && template.name.present? && template.name != agreement_name %>
       <div class="marfi-agreements-meta"><%= template.name %></div>
     <% end %>

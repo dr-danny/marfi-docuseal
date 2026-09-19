@@ -91,6 +91,8 @@ Rails.application.routes.draw do
     resources :events, only: %i[index], controller: 'submission_events'
     resources :download, only: %i[index], controller: 'submissions_download'
     resources :resend_email, only: %i[create], controller: 'submissions_resend_email'
+    resources :edit, only: %i[create], controller: 'submissions_edit'
+    resources :recipients, only: %i[index], controller: 'submission_recipients'
   end
   resources :submitters, only: %i[edit update]
   resources :console_redirect, only: %i[index]

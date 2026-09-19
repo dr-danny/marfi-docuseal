@@ -1,0 +1,77 @@
+<% return unless signed_in? && !local_assigns[:is_preview] %>
+<% share_url = agreement_share_url(@submission) %>
+<div class="marfi-app-actions marfi-agreement-actions">
+  <%= link_to sent_path,
+              class: 'marfi-app-action',
+              title: 'Back to Live Agreements',
+              aria: { label: 'Back to Live Agreements' } do %>
+    <%= svg_icon('arrow_left', class: 'w-5 h-5 stroke-2') %>
+  <% end %>
+
+  <% if @submission.audit_trail.present? %>
+    <a href="<%= ActiveStorage::Blob.proxy_path(@submission.audit_trail.blob, expires_at: 4.hours.from_now) %>"
+       class="marfi-app-action"
+       target="_blank"
+       title="<%= t('audit_log') %>"
+       aria-label="<%= t('audit_log') %>">
+      <%= svg_icon('external_link', class: 'w-5 h-5 stroke-2') %>
+    </a>
+  <% else %>
+    <open-modal-mobile>
+      <%= link_to submission_events_path(@submission),
+                  class: 'marfi-app-action',
+                  title: t('event_log'),
+                  aria: { label: t('event_log') },
+                  data: { turbo_frame: :modal } do %>
+        <%= svg_icon('logs', class: 'w-5 h-5 stroke-2') %>
+      <% end %>
+    </open-modal-mobile>
+  <% end %>
+
+  <open-modal-mobile>
+    <%= link_to submission_recipients_path(@submission),
+                class: 'marfi-app-action',
+                title: 'Recipients',
+                aria: { label: 'Recipients' },
+                data: { turbo_frame: :modal } do %>
+      <%= svg_icon('users', class: 'w-5 h-5 stroke-2') %>
+    <% end %>
+  </open-modal-mobile>
+
+  <% if share_url.present? && !@submission.archived_at? && !@submission.template&.archived_at? && !@submission.expired? %>
+    <clipboard-copy data-text="<%= share_url %>">
+      <label class="marfi-app-action marfi-agreement-share" title="Copy share link" aria-label="Copy share link">
+        <input type="radio" class="peer hidden">
+        <span class="peer-checked:hidden flex items-center"><%= svg_icon('link', class: 'w-5 h-5 stroke-2') %></span>
+        <span class="hidden peer-checked:flex items-center"><%= svg_icon('clipboard_copy', class: 'w-5 h-5 stroke-2') %></span>
+      </label>
+    </clipboard-copy>
+  <% end %>
+
+  <% if agreement_editable?(@submission) %>
+    <%= button_to submission_edit_index_path(@submission),
+                  method: :post,
+                  class: 'marfi-app-action is-edit',
+                  title: 'Edit agreement',
+                  aria: { label: 'Edit agreement' },
+                  form: {
+                    data: {
+                      turbo_confirm: 'Editing voids and archives this agreement, then creates a fresh reset copy with a new Agreement ID. Continue?'
+                    }
+                  } do %>
+      <%= svg_icon('pencil', class: 'w-5 h-5 stroke-2') %>
+    <% end %>
+  <% end %>
+
+  <% if @submission.submitters.to_a.any?(&:completed_at?) %>
+    <download-button role="button"
+                     tabindex="0"
+                     aria-label="<%= t('download') %>"
+                     title="<%= t('download') %>"
+                     data-src="<%= submission_download_index_path(@submission, combined: true) %>"
+                     class="marfi-app-action">
+      <span data-target="download-button.defaultButton"><%= svg_icon('download', class: 'w-5 h-5 stroke-2') %></span>
+      <span class="hidden" data-target="download-button.loadingButton"><%= svg_icon('loader', class: 'w-5 h-5 animate-spin stroke-2') %></span>
+    </download-button>
+  <% end %>
+</div>

@@ -24,6 +24,7 @@ class ApplicationController < ActionController::Base
                 :marfi_dashboard_actions?,
                 :marfi_dashboard_search?,
                 :marfi_dashboard_selected,
+                :marfi_agreement_detail?,
                 :marfi_archived?,
                 :marfi_archived_path
 
@@ -66,6 +67,10 @@ class ApplicationController < ActionController::Base
     else
       pagy(collection, **keyword_args)
     end
+  end
+
+  def marfi_agreement_detail?
+    signed_in? && controller_name == 'submissions' && action_name == 'show'
   end
 
   def marfi_dashboard_nav?
