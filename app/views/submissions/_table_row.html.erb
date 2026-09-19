@@ -61,6 +61,11 @@
   </td>
   <td class="marfi-agreements-cell is-actions">
     <div class="marfi-agreements-actions">
+      <% if signable.present? %>
+        <a href="<%= submit_form_path(slug: signable.slug) %>" data-turbo="false" target="_blank" class="marfi-agreements-icon is-sign" title="<%= t('sign_now') %>" aria-label="<%= t('sign_now') %>">
+          <%= svg_icon('writing_sign', class: 'w-5 h-5 stroke-2') %>
+        </a>
+      <% end %>
       <a href="<%= submission_path(submission) %>" class="marfi-agreements-icon" title="<%= t('view') %>" aria-label="<%= t('view') %>">
         <%= svg_icon('eye', class: 'w-5 h-5 stroke-2') %>
       </a>
